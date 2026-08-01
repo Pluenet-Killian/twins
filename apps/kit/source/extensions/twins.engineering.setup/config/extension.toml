@@ -1,0 +1,24 @@
+[package]
+title = "Twins Engineering Setup"
+version = "0.1.0"
+description = "Opens and verifies the canonical reference stage for Twins Engineering."
+category = "Setup"
+keywords = ["kit", "openusd", "digital-twin"]
+
+
+[core]
+order = 2000
+
+
+[dependencies]
+"omni.usd" = {}
+
+
+[settings.exts."twins.engineering.setup"]
+stage_path = ""
+reference_prim_path = "/World/Assets/ReferenceRackA01"
+reference_asset_id = "00000000-0000-4000-8000-000000000001"
+
+
+[[python.module]]
+name = "twins.engineering.setup"
