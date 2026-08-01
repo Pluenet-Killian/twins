@@ -238,13 +238,19 @@ La frontière de sécurité sépare les données publiques, les informations d'i
 
 **Décision actée :** le démonstrateur représente un site fictif localisé en France métropolitaine. Il doit être techniquement cohérent avec un contexte français et européen, sans reproduire un site réel sensible. La plateforme devra rester paramétrable afin que de futurs jumeaux puissent utiliser d'autres localisations, climats, tensions, réglementations et pratiques d'ingénierie.
 
-Le référentiel s'appuiera sur les normes internationales pertinentes, notamment la famille ISO/IEC 22237 pour les infrastructures de data centers, les normes IEC applicables aux systèmes électriques et aux équipements, ainsi que les recommandations ASHRAE pertinentes pour les environnements thermiques et le refroidissement. Les exigences réglementaires et pratiques françaises applicables au bâtiment, à l'électricité, à l'incendie, à l'environnement, à la sécurité et au travail devront être identifiées au fur et à mesure des domaines traités.
+Le référentiel d'infrastructure s'appuiera sur la famille ISO/IEC 22237 et son pendant européen EN 50600, en sélectionnant explicitement les parties applicables au bâtiment, à l'alimentation, au contrôle environnemental, au câblage, à la sécurité et aux informations d'exploitation. Les systèmes électriques et équipements utiliseront les normes IEC pertinentes, dont IEC 60909 pour les études de court-circuit lorsqu'elle s'applique. ASHRAE 90.4-2025 et les guides TC 9.9 encadreront les hypothèses énergétiques et les enveloppes thermiques ; les publications Open Compute Project pourront compléter la conception du refroidissement liquide haute densité sans être présentées comme des normes réglementaires.
+
+Les indicateurs énergétiques et environnementaux seront définis selon la famille ISO/IEC 30134, notamment PUE, CUE, WUE, CER et réutilisation d'énergie. Chaque indicateur devra déclarer sa frontière de mesure, sa période, ses compteurs, ses exclusions, son caractère simulé ou observé et sa méthode d'agrégation. Aucun « PUE instantané » ou indicateur comparable ne sera affiché comme une valeur universelle sans ces informations. ISO/IEC 30173:2023 fournira le vocabulaire de cadrage du jumeau numérique, de ses acteurs et de son cycle de vie ; elle ne remplacera pas les normes physiques ni les critères de validation propres aux domaines.
+
+Les exigences réglementaires et pratiques françaises applicables au bâtiment, à l'électricité, à l'incendie, à l'environnement, à la sécurité et au travail devront être identifiées au fur et à mesure des domaines traités. Une matrice de conformité reliera chaque exigence réellement appliquée à son édition, son périmètre, son interprétation, sa preuve et son responsable.
 
 Les normes constituent des références d'exigences et de terminologie ; leur simple mention ne vaudra pas déclaration de conformité. Toute affirmation de conformité devra préciser l'édition, le périmètre, les clauses évaluées, les preuves disponibles et l'autorité compétente. Les exigences contradictoires ou dépendantes d'une juridiction devront être isolées dans des profils configurables.
 
 ### 4.6 Contraintes structurantes connues
 
 Le développement principal doit rester exécutable sur la machine actuelle, équipée de 64 Go de mémoire et d'un GPU NVIDIA RTX 5090 Laptop disposant d'environ 24 Go de VRAM. L'absence de RTX Pro 6000 ne doit pas empêcher le développement. Elle impose une architecture exploitant les payloads OpenUSD, l'instanciation, les niveaux de détail, le chargement partiel, l'optimisation des textures et la séparation des calculs lourds.
+
+La machine actuelle permet le développement Kit, OpenDSS, Modelica, PostgreSQL et des cas CFD de taille moyenne, mais elle n'est pas la cible d'exécution simultanée de toutes les fidélités maximales. OpenFOAM sera exécuté sous WSL2 ou Linux et les campagnes volumineuses devront être exportables vers une station, un serveur ou un environnement HPC sans changer le manifeste de run. Le pilote NVIDIA, la version Kit et les extensions seront verrouillés sur une combinaison validée ; une mise à niveau sera précédée d'un smoke test de la scène, du rendu et du streaming. Hardware-Accelerated GPU Scheduling sera traité comme un paramètre contrôlé si Kit ou WebRTC présente des gels.
 
 L'application Omniverse complète ne sera pas exécutée librement par chaque visiteur du site public. La diffusion Web reposera sur des résultats pré-calculés et une représentation dérivée légère ; les sessions GPU haute fidélité seront réservées aux démonstrations maîtrisées.
 
@@ -384,7 +390,9 @@ Au 1er août 2026, ASHRAE 223 reste un projet de norme `223P` en évolution, ave
 
 Brick complétera 223P pour son vocabulaire ouvert d'équipements, de points, de systèmes et de métadonnées de bâtiment, notamment pour relier les capteurs et données opérationnelles. Brick 1.4 et les versions suivantes disposent d'une extension s'appuyant sur ASHRAE 223P pour les connexions ; la version exacte sera figée lors de l'implémentation et validée avec le profil 223P retenu.
 
-IFC reste la référence ouverte d'échange BIM pour la géométrie, les espaces, les systèmes et les objets de conception. IFC et 223P sont complémentaires : IFC fournit la couche produit et géométrique, tandis que 223P fournit la couche sémantique opérationnelle et la topologie destinée aux applications. En l'absence de mapping normatif universel entre les deux, les correspondances devront être explicites, testées et versionnées.
+IFC 4.3 reste la référence ouverte d'échange BIM pour la géométrie, les espaces, les systèmes et les objets de conception. Une Information Delivery Specification, IDS, exprimera les entités, classifications, propriétés et relations exigées par chaque import. IfcOpenShell et IfcTester contrôleront le schéma IFC, les règles EXPRESS applicables et l'IDS avant création ou mise à jour d'actifs. bSDD pourra relier les propriétés à des dictionnaires et identifiants normalisés. Un fichier visuellement correct mais invalide, incomplet ou ambigu selon l'IDS ne sera pas accepté silencieusement.
+
+IFC et 223P sont complémentaires : IFC fournit la couche produit et géométrique, tandis que 223P fournit la couche sémantique opérationnelle et la topologie destinée aux applications. En l'absence de mapping normatif universel entre les deux, les correspondances devront être explicites, contrôlées, versionnées et accompagnées d'un rapport d'import. Project Haystack pourra être pris en charge par un adaptateur pour intégrer des BMS existants, mais ne deviendra pas un modèle canonique concurrent. RealEstateCore et l'Asset Administration Shell ne seront ajoutés que lorsqu'un cas client de portefeuille immobilier, d'équipement industriel ou de passeport numérique le justifiera.
 
 Le graphe RDF ne remplacera pas PostgreSQL ni TimescaleDB. Il constituera une projection sémantique interopérable du registre et des références vers les sources de données. La stratégie de stockage du graphe, dans PostgreSQL ou dans un moteur RDF séparé, reste à décider après un prototype et des mesures de performance.
 
@@ -400,7 +408,7 @@ Un surrogate IA ne pourra être présenté comme remplaçant un modèle physique
 
 OpenUSD assemble la représentation du data center, mais ne remplace ni les solveurs ni la base de données. Omniverse Kit affiche et manipule la scène, mais n'est pas la source de vérité des calculs. React constitue le poste de contrôle, mais ne calcule pas la physique. Le moteur d'orchestration synchronise les domaines, mais ne réécrit pas les solveurs spécialisés.
 
-Chaque domaine conserve sa propre source de vérité : OpenDSS pour le réseau électrique, Modelica pour les systèmes thermiques et les régulations, OpenFOAM pour la CFD, PostgreSQL et TimescaleDB pour les données persistantes, et le moteur C++ pour le temps, les événements et l'état global de la co-simulation.
+Chaque domaine conserve sa propre source de vérité : OpenDSS pour le réseau électrique opérationnel RMS, Modelica pour les systèmes thermiques et les régulations, OpenFOAM pour la CFD, PostgreSQL et TimescaleDB pour les données persistantes, et le moteur C++ pour le cycle de vie des runs, les scénarios, les événements métier, l'audit et l'état global de la co-simulation. L'algorithme de synchronisation entre solveurs pourra être confié à une infrastructure spécialisée après décision d'architecture ; la responsabilité produit du moteur C++ ne suppose pas qu'il réimplémente seul toutes les fonctions d'un master de co-simulation.
 
 ### 5.10 Simulation déterministe et rejouable
 
@@ -412,7 +420,7 @@ Le projet doit accepter plusieurs niveaux de fidélité. Un modèle analytique o
 
 ### 5.12 Modèles de domaine et contrats d'échange
 
-**Décision actée :** le jumeau numérique ne sera pas développé comme un simulateur physique monolithique. Il sera composé de modèles de domaine spécialisés, indépendamment testables et remplaçables, coordonnés par le moteur d'orchestration C++. La topologie canonique décrit les éléments et leurs relations ; les modèles de domaine calculent leur comportement.
+**Décision actée :** le jumeau numérique ne sera pas développé comme un simulateur physique monolithique. Il sera composé de modèles de domaine spécialisés, vérifiables et remplaçables, coordonnés par le produit d'orchestration C++. La topologie canonique décrit les éléments et leurs relations ; les modèles de domaine calculent leur comportement.
 
 Le découpage initial comprend le réseau électrique, les systèmes thermiques et hydrauliques, la circulation d'air, les ressources informatiques et leurs workloads, les automatismes, les systèmes de sécurité ainsi que les opérateurs et procédures. Ce découpage pourra être affiné, mais une même loi physique ne devra pas être implémentée simultanément dans plusieurs domaines sans source autoritaire et règle de synchronisation explicites.
 
@@ -422,7 +430,9 @@ Les échanges entre domaines seront définis par des contrats versionnés. Un co
 
 Le couplage de référence suit la chaîne causale suivante : le modèle informatique calcule l'activité des ressources, leur consommation électrique et la chaleur dissipée ; le modèle électrique calcule la disponibilité et la qualité de l'alimentation ainsi que les limites imposées aux charges ; les modèles thermiques, hydrauliques et aérauliques calculent la capacité de refroidissement et les températures résultantes ; les automatismes et politiques informatiques réagissent en modifiant les consignes, les équipements actifs, le placement des workloads ou leur niveau de puissance. La nouvelle charge ferme alors la boucle de calcul.
 
-Le moteur C++ est responsable de l'horloge virtuelle, de l'ordre d'exécution, de la file d'événements, de la synchronisation, des reprises, des délais, de la détection des erreurs d'intégration et de la traçabilité du run. Il ne doit pas réimplémenter les équations physiques déjà placées sous l'autorité d'un solveur spécialisé.
+Le moteur C++ est responsable du manifeste, du scénario, du cycle de vie du run, de la file d'événements métier, des reprises, des délais opérationnels, de la détection des erreurs d'intégration et de la traçabilité. Le mécanisme chargé d'accorder le temps aux modèles et de transporter leurs échanges sera choisi après un prototype comparant HELICS, OMSimulator avec SSP et une boucle C++ minimale. La décision mesurera le déterminisme, les événements simultanés, les pas variables, les boucles fortement couplées, les checkpoints, les diagnostics, la performance et la complexité de distribution. Le projet n'adoptera pas une infrastructure de co-simulation uniquement pour sa richesse fonctionnelle, mais n'écrira pas non plus un master propriétaire sans démontrer que les solutions existantes sont insuffisantes.
+
+FMI 2.0.5 constitue la baseline de production pour les FMU tant que l'export et l'import FMI 3.0.2 ne sont pas démontrés stables sur le couple d'outils verrouillé. FMI 3.0.2 reste la cible pour les nouveaux modèles qui bénéficient de ses horloges, types et Scheduled Execution ; une FMU ne sera promue à cette cible qu'après validation de schéma, import réel et scénarios d'événements. SSP 2.0.1 décrira et empaquetera les composants, connexions, unités, paramètres et métadonnées d'un système de co-simulation. SSP reste un format d'échange et de reproduction : il ne remplace ni le registre canonique, ni le scénario métier, ni le manifeste de preuve.
 
 Une exécution ne devra pas continuer silencieusement avec une valeur invalide ou un solveur défaillant. Selon le contrat concerné, le moteur devra interrompre le run, employer un mode dégradé explicitement autorisé, conserver la dernière valeur valide pendant une durée limitée ou produire un état indéterminé accompagné d'un diagnostic. Le choix devra être documenté par domaine et visible dans les résultats.
 
@@ -456,6 +466,8 @@ Omniverse ne calcule pas l'électricité. Il représente les états et résultat
 
 La validation du domaine électrique comprendra le contrôle de la topologie, des unités et des plaques signalétiques, des comparaisons à des calculs manuels ou cas de référence, la vérification des bilans de puissance et d'énergie, des courbes constructeur, des courants de défaut, de la coordination des protections, des séquences UPS-groupe-ATS et des règles de délestage. Les jeux de données, versions de modèles, tolérances et résultats de référence devront être conservés pour permettre les régressions.
 
+OpenDSS demeure l'autorité du calcul RMS pendant le run, mais ne sera pas l'unique preuve d'une étude européenne de court-circuit ou de sélectivité. Des cas de référence seront recalculés indépendamment avec pandapower selon IEC 60909 lorsque cette méthode s'applique. Un écart entre les deux routes devra être expliqué par les hypothèses, conventions ou limites avant acceptation. Toute affirmation engageant la conception d'un site réel, le réglage de protections ou une conformité exigera en plus une revue par un professionnel compétent et, selon le projet, une comparaison avec ETAP, DIgSILENT PowerFactory ou un autre outil d'ingénierie reconnu.
+
 ### 5.14 Modèle des domaines thermique, hydraulique et aéraulique
 
 **Décision actée :** le site de référence utilise une architecture de refroidissement hybride. Les baies informatiques classiques sont principalement refroidies par l'air de la salle, tandis que les baies IA à haute densité utilisent un refroidissement liquide direct-to-chip. Les deux branches sont intégrées au même bilan énergétique et peuvent partager une production frigorifique, des échangeurs ou des organes de rejet selon la configuration technique retenue.
@@ -472,7 +484,11 @@ Le modèle aéraulique de la salle devra représenter l'apport d'air froid, le p
 
 OpenFOAM sera utilisé pour les campagnes CFD détaillées de la salle et des zones nécessitant une résolution spatiale fine. Ces campagnes seront exécutées hors ligne sur des configurations identifiées et conserveront leur maillage, conditions aux limites, paramètres, version du solveur, critères de convergence et résultats. La CFD complète ne sera pas exécutée en permanence dans la boucle interactive locale.
 
+OpenFOAM sera exécuté comme un processus ou environnement séparé sous WSL2 ou Linux. Les résultats natifs du solveur, les logs, résidus, études de maillage et conditions aux limites seront conservés ; VTKHDF ou VTK XML servira aux échanges de visualisation lorsque pertinent. Sa licence GPLv3 fera l'objet d'une revue avant toute distribution propriétaire. Pour une affirmation d'ingénierie forte, au moins un cas représentatif sera confronté à une mesure, une référence indépendante, Ansys Icepak, Cadence DataCenter Design/Insight ou une expertise équivalente.
+
 Les résultats CFD validés serviront à construire ou calibrer un modèle réduit capable de reproduire les phénomènes pertinents en temps interactif : distribution des températures d'entrée, recirculation, influence des débits et risque de point chaud. Ce modèle réduit devra annoncer ses variables d'entrée, son domaine de validité et son erreur par rapport aux cas CFD de référence. Une extrapolation hors de ce domaine devra être détectée et signalée.
+
+PhysicsNeMo ne sera pas une étape automatique de cette chaîne. Il ne sera évalué qu'après constitution d'un corpus CFD suffisamment large, séparation d'un jeu de validation indépendant, définition d'une détection hors distribution et comparaison avec un modèle réduit non neuronal plus simple. FDS pourra ultérieurement calculer la fumée et la chaleur d'un incendie à partir de cas disposant d'une stratégie de vérification et validation. FDS+Evac étant abandonné, l'évacuation et l'intervention humaine resteront portées par le modèle procédural du projet ou par un outil distinct explicitement validé.
 
 Le domaine reçoit la chaleur dissipée et sa localisation depuis le modèle informatique, l'état d'alimentation et les limitations depuis le domaine électrique, les commandes depuis les automatismes ainsi que les conditions extérieures du scénario. Il transmet les températures d'entrée et de sortie, débits, pressions, capacités disponibles, consommations électriques, marges, performances, points chauds, alarmes et conditions susceptibles d'imposer un throttling ou un arrêt informatique.
 
@@ -578,6 +594,8 @@ Chaque dossier précisera l'usage prévu, les décisions soutenues, les question
 
 La vérification établit que le logiciel et les équations ont été implémentés et intégrés correctement. Elle comprend selon le risque les compilations, analyses statiques, smoke tests, analyses dimensionnelles, bilans, tests de convergence, tests de contrats et d'intégration, scénarios reproductibles, comparaisons analytiques, cas manufacturiers ou académiques de référence et tests de régression de bout en bout.
 
+Les travaux CFD et de transfert thermique appliqueront les principes pertinents d'ASME V&V 20. Ils distingueront vérification du code, vérification de solution, convergence de maillage et de pas, validation par rapport à une référence, incertitude de mesure, incertitude numérique et incertitude de modèle. L'accord entre deux logiciels utilisant les mêmes hypothèses ne constituera pas à lui seul une validation.
+
 **Décision de méthode :** aucun test unitaire ne sera créé, complété ou exécuté par défaut, afin de préserver la vitesse de développement et d'éviter une infrastructure de tests isolés jugée peu utile au stade courant. Un test unitaire n'est autorisé que lorsque le propriétaire du projet le demande explicitement dans la requête concernée. Cette règle ne supprime pas l'obligation de vérifier les contrats, intégrations, scénarios, bilans physiques et affirmations de crédibilité par des moyens adaptés.
 
 La validation établit dans quelle mesure le modèle représente suffisamment le comportement attendu pour son usage. Elle s'appuie, selon disponibilité, sur des données mesurées, essais, courbes constructeur, résultats d'outils reconnus, campagnes CFD, retours d'experts et comparaisons croisées. Une validation dans un régime de fonctionnement ne vaut pas validation universelle.
@@ -606,9 +624,15 @@ Les données synthétiques, publiques, internes, client, personnelles et sensibl
 
 Le développement intégrera inventaire des dépendances, versions verrouillées, analyse de vulnérabilités, revue de code, tests, génération d'un SBOM pour les livrables, contrôle des licences, provenance des artefacts et traitement documenté des vulnérabilités. Les composants tiers, modèles téléchargés et assets 3D devront être considérés comme des entrées non fiables jusqu'à leur contrôle.
 
+La préparation commerciale européenne intégrera une analyse d'applicabilité du Cyber Resilience Act, de NIS2, du Data Act et du RGPD. Sans préjuger d'une qualification juridique, le produit conservera un SBOM, la durée et la politique de support, un canal de signalement, la provenance des versions, les mises à jour et preuves de traitement des vulnérabilités. Une offre connectée devra permettre l'accès et l'export des données et métadonnées dans un format lisible par machine sans verrouillage artificiel. Les journaux, habilitations et interventions associés à une personne seront minimisés, séparés, protégés et soumis à une durée de conservation justifiée. Une revue juridique précédera toute distribution ou exploitation commerciale qui entre dans ces champs.
+
+Les fichiers IFC, CAD, USD, textures, FMU, modèles et archives sont des entrées potentiellement actives ou malveillantes. Leur ingestion et l'exécution de convertisseurs ou FMU auront lieu dans des répertoires et processus isolés avec quotas, validation de type, empreinte et provenance. Le pipeline public ne consommera que des artefacts approuvés et ne disposera d'aucun accès à la zone OT ou aux sources d'ingénierie sensibles.
+
 La disponibilité et l'intégrité sont prioritaires pour les fonctions opérationnelles. Les erreurs de réseau, messages dupliqués, retardés ou réordonnés, pertes de service, reprise après incident et sauvegardes devront être testés. L'horloge simulée restera séparée de l'horloge réelle afin qu'une accélération, pause ou reprise de simulation ne perturbe pas l'authentification, les journaux ou les éventuels connecteurs externes.
 
 ## 6. Architecture technologique cible
+
+Les versions concrètes de cette architecture, l'état observé du poste, les arbitrages de compatibilité et la procédure de promotion sont définis dans `docs/toolchain/TOOLCHAIN_BASELINE.md`. Ce document est normatif pour les développeurs et agents IA : une dépendance n'est pas choisie à partir d'un numéro flottant ou d'une documentation visant une autre génération. Les manifests exécutables verrouillent la résolution exacte et doivent rester cohérents avec la baseline.
 
 ### 6.1 Visualisation 3D
 
@@ -620,15 +644,19 @@ La disponibilité et l'intégrité sont prioritaires pour les fonctions opérati
 
 La scène sera découpée en couches, payloads et niveaux de détail chargeables à la demande. Les équipements répétés utiliseront l'instanciation, les petits détails non visibles seront masqués selon la distance et les textures disposeront de résolutions adaptées. L'objectif est de préserver l'identité et la précision utile sans charger simultanément toute la géométrie disponible.
 
+L'application sera dérivée du Kit App Template moderne et non du Launcher Omniverse déprécié ni de l'application DSX. Le SDK Kit, les extensions, le pilote NVIDIA et les options de rendu seront verrouillés dans une matrice de compatibilité. Chaque extension redistribuée devra apparaître dans l'inventaire de licences et être autorisée pour ce mode de distribution. Une mise à niveau ne sera acceptée qu'après démarrage depuis un environnement propre, ouverture de la scène de référence, rendu, sélection, échange avec l'orchestrateur et, lorsqu'il est utilisé, test WebRTC.
+
 ### 6.2 Production des assets
 
-- IFC et Revit pour le bâtiment et les systèmes BIM ;
+- IFC 4.3 et Revit pour le bâtiment et les systèmes BIM ;
 - STEP, JT et formats CAO constructeurs pour les équipements ;
-- IfcOpenShell pour lire, contrôler et extraire les données IFC ;
+- IDS, bSDD, IfcOpenShell et IfcTester pour spécifier, contrôler et extraire les données IFC ;
 - Blender pour le nettoyage et les adaptations visuelles ;
 - Substance 3D, optionnel, pour les matériaux PBR détaillés.
 
-Les fichiers BIM et CAO restent les sources d'ingénierie. Les fichiers USD optimisés sont les assets d'exécution et de visualisation.
+Les fichiers BIM et CAO restent les sources d'ingénierie. Les fichiers USD optimisés sont les assets d'exécution et de visualisation. Chaque ingestion conserve le fichier source par empreinte, sa licence, son unité, son repère, son propriétaire, ses paramètres de conversion, son rapport de contrôle, ses dépendances et ses bindings vers les UUID canoniques. Une fiche de provenance des assets et données complète le SBOM logiciel.
+
+La chaîne IFC contrôle l'IDS avant conversion, extrait les propriétés et identités avec IfcOpenShell, puis génère la géométrie USD sans confondre représentation et sémantique. Blender travaille sur des branches géométriques ou dérivées : il ne doit pas ouvrir puis réexporter le stage racine en supposant préserver toutes les layers, références et variantes OpenUSD. Les conversions Omniverse CAD Converter seront automatisables et reproductibles ; une conversion réussie visuellement ne vaut pas validation de l'information d'ingénierie.
 
 ### 6.3 Poste de contrôle
 
@@ -642,35 +670,43 @@ Les fichiers BIM et CAO restent les sources d'ingénierie. Les fichiers USD opti
 
 La vue 3D principale de l'application d'ingénierie est rendue par Omniverse et non par React, Three.js ou React Three Fiber. Le cockpit React et Kit échangent les sélections et états par identifiants canoniques ; ils ne maintiennent pas deux modèles métier indépendants.
 
-Le site public utilisera React Three Fiber, renderer React de Three.js, pour afficher des artefacts glTF/GLB dérivés de la scène OpenUSD. Les maillages, matériaux, textures, niveaux de détail et métadonnées publiables seront produits par un pipeline dédié avec compression et chargement progressif. Cette représentation publique rejouera des résultats pré-calculés et ne réalisera aucun calcul physique faisant autorité.
+Le site public utilisera React Three Fiber, renderer React de Three.js, pour afficher des artefacts glTF/GLB dérivés de la scène OpenUSD. Les maillages, matériaux, textures KTX2/Basis Universal, niveaux de détail et métadonnées publiables seront produits par un pipeline dédié avec instanciation, compression et chargement progressif. Cette représentation publique rejouera des résultats pré-calculés et ne réalisera aucun calcul physique faisant autorité.
 
-Le site public devra proposer une solution de repli pour les appareils ou navigateurs insuffisants : visite guidée allégée, images ou vidéo synchronisées aux mêmes événements et mesures. WebGPU pourra être utilisé lorsqu'il est stable sur le client, avec une voie de compatibilité WebGL tant qu'elle reste nécessaire.
+La publication USD vers glTF étant une conversion avec perte, elle produira un manifeste canonique reliant chaque nœud publiable à son UUID, à la version de scène, au run, aux séries utiles, aux droits et aux empreintes des artefacts. Le nom d'un maillage ou le chemin d'un prim ne sera jamais utilisé seul comme identité. Les métadonnées glTF `extras` pourront accélérer la sélection mais le manifeste restera la preuve d'association et la liste d'autorisation des données publiques.
+
+Le site public devra proposer une solution de repli pour les appareils ou navigateurs insuffisants : visite guidée allégée, images ou vidéo synchronisées aux mêmes événements et mesures. WebGL2 constitue la voie compatible de référence. WebGPU restera une amélioration progressive activée après détection et mesure tant que le renderer et les navigateurs concernés ne fournissent pas une stabilité suffisante. Une scène représentative comparera le temps de chargement, la mémoire, la sélection et la fluidité avant de figer les budgets et avant d'envisager un autre moteur Web.
 
 ### 6.4 Moteur de simulation
 
 - C++20 pour l'horloge virtuelle, les événements, les scénarios, les automates et l'orchestration ;
 - CMake pour le build ;
 - vcpkg en mode manifeste pour les dépendances C++ ;
+- mp-units pour exprimer les quantités physiques et contrôler les dimensions à la compilation ;
 - aucun framework de test unitaire dans le socle initial ; GoogleTest ne pourra être ajouté que sur demande explicite du propriétaire ;
 - unités SI obligatoires dans les contrats physiques.
+
+Les grandeurs physiques ne circuleront pas comme des nombres nus. Le type de quantité, l'unité canonique, les règles de conversion et, pour les températures, la distinction entre valeur absolue et différence seront explicites dans le domaine C++ et dans les schémas sérialisés. Protocol Buffers transportera une représentation stable et documentée ; les contrôles dimensionnels resteront exécutés au plus près des modèles.
 
 ### 6.5 Adaptateurs et outils scientifiques
 
 - Python pour intégrer les solveurs, traiter les données et automatiser les pipelines ;
 - `uv` pour les environnements, dépendances et workspaces Python ;
-- pytest pour les tests Python ;
+- pytest uniquement comme exécuteur de vérifications Python d'intégration, de contrats, de pipelines scientifiques ou de scénarios ; il ne constitue pas une autorisation implicite de créer des tests unitaires ;
 - aucun calcul physique critique ne doit dépendre d'un notebook non versionné.
 
 ### 6.6 Solveurs
 
 - OpenDSS comme premier solveur du réseau électrique ;
+- pandapower comme route indépendante de vérification IEC 60909 et de cas de protection sélectionnés ;
 - Modelica Buildings avec OpenModelica pour le refroidissement, l'hydraulique et les régulations ;
-- FMI 3.0.2 comme cible des nouveaux contrats de modèles dynamiques, notamment pour la co-simulation et l'exécution planifiée ;
-- compatibilité d'import FMI 2.0 maintenue pour les modèles et outils qui ne publient pas encore de FMU FMI 3 ;
+- FMI 2.0.5 comme baseline de production des FMU ;
+- FMI 3.0.2 comme cible promue modèle par modèle après preuve de compatibilité et de stabilité ;
+- SSP 2.0.1 pour décrire et transporter les assemblages, connexions, unités et paramètres de co-simulation ;
+- prototype comparatif HELICS, OMSimulator/SSP et boucle C++ minimale avant décision sur le master temporel ;
 - OpenFOAM pour les campagnes CFD détaillées ;
-- FDS, ultérieurement, pour la fumée et la chaleur liées aux incendies ;
-- PhysicsNeMo, ultérieurement, pour construire des modèles réduits à partir de données validées ;
-- ETAP, Ansys Icepak ou Cadence comme outils commerciaux éventuels de validation.
+- FDS, ultérieurement, pour la fumée et la chaleur liées aux incendies, sans FDS+Evac ;
+- PhysicsNeMo seulement après constitution et validation d'un corpus CFD justifiant un surrogate neuronal ;
+- ETAP ou DIgSILENT PowerFactory, Ansys Icepak ou Cadence comme outils commerciaux éventuels de comparaison et validation.
 
 ### 6.7 Communications
 
@@ -678,9 +714,10 @@ Le site public devra proposer une solution de repli pour les appareils ou naviga
 - WebSocket pour la télémétrie, les alarmes et la timeline en direct ;
 - FastAPI comme première passerelle entre le frontend et les services ;
 - gRPC et Protocol Buffers pour les contrats et les flux internes entre C++, Python et Kit ;
+- Buf CLI pour formater, valider, générer et contrôler les ruptures de compatibilité des schémas Protocol Buffers ;
 - WebRTC réservé au rendu vidéo et aux interactions avec le viewport.
 
-Une architecture de messages distribuée telle que Kafka ne sera pas introduite au premier incrément. Les contrats resteront suffisamment indépendants du transport pour permettre cette évolution si des débits, sites ou besoins de découplage réels la justifient. Les appels devront propager l'identifiant du run, le temps simulé, la version du contrat et les diagnostics.
+Une architecture de messages distribuée telle que Kafka ne sera pas introduite au premier incrément. Les contrats resteront suffisamment indépendants du transport pour permettre cette évolution si des débits, sites ou besoins de découplage réels la justifient. Les appels devront propager l'identifiant du run, le temps simulé, la version du contrat, la qualité, la provenance et les diagnostics. Les paquets Protobuf seront versionnés, les numéros de champs retirés seront réservés et Buf vérifiera les changements contre la branche principale ou une image de référence. Une empreinte de preuve sera calculée sur un manifeste canonique, pas sur un encodage Protobuf supposé canonique.
 
 ### 6.8 Persistance
 
@@ -688,23 +725,32 @@ Une architecture de messages distribuée telle que Kafka ne sera pas introduite 
 - TimescaleDB comme extension temporelle dès le début ;
 - stockage des équipements, topologies, scénarios, paramètres, événements, alarmes et mesures dans PostgreSQL/TimescaleDB ;
 - stockage des métadonnées et des chemins des assets dans PostgreSQL ;
-- conservation des fichiers lourds CAD, USD, CFD et textures sur le système de fichiers ou dans un stockage objet compatible S3 ;
+- dbmate et des migrations SQL explicites pour faire évoluer le schéma partagé sans le placer sous l'autorité d'un ORM ;
+- conservation initiale des fichiers lourds CAD, USD, CFD et textures sur un système de fichiers adressé par contenu, derrière une interface pouvant cibler ensuite un stockage objet compatible S3 ;
 - interdiction de stocker les gros binaires directement dans les tables PostgreSQL sans besoin justifié ;
 - Git pour le code, les contrats et les fichiers texte ;
 - Git LFS seulement pour les assets indispensables et maîtrisés.
 
 DuckDB ne fait pas partie de l'architecture cible.
 
+L'édition TimescaleDB sera décidée avant le bootstrap de la base. L'édition Apache 2 sera privilégiée si elle couvre les fonctions requises et préserve une future offre hébergée. Toute utilisation de la Community Edition sous Timescale License devra documenter ses restrictions, notamment l'interdiction de la proposer comme service, et faire l'objet d'une revue juridique avant commercialisation. Les migrations ne seront pas exécutées implicitement au démarrage d'un service de production ; elles seront planifiées, sauvegardées et vérifiées sur une restauration représentative, y compris pour les hypertables, politiques et agrégats continus.
+
+Le manifeste d'artefact conservera au minimum l'empreinte SHA-256, la taille, le type de média, la provenance, la licence, les dépendances, le statut de validation et l'emplacement. MinIO ne sera pas la dépendance locale par défaut en raison de l'archivage de son dépôt communautaire et de sa licence AGPLv3 ; la portabilité visera les propriétés nécessaires et l'API S3, pas un fournisseur précis. Parquet sera utilisé pour les exports tabulaires et séries archivées, Zarr v3 pour les tableaux multidimensionnels découpés, VTKHDF ou VTK XML pour les champs et maillages de visualisation, et les formats natifs des solveurs resteront les sources de calcul. NPZ pourra servir de cache temporaire mais pas de format autoritaire de long terme.
+
 ### 6.9 Sémantique et intégration future
 
-- IFC pour la structure BIM et les données de conception ;
+- IFC 4.3, IDS et bSDD pour la structure BIM, les exigences d'information et les dictionnaires ;
 - attributs OpenUSD nommés et versionnés pour relier les prims au modèle métier ;
 - profil versionné ASHRAE 223P comme cible de sémantique opérationnelle et de topologie dès la conception du modèle canonique ;
 - Brick comme vocabulaire complémentaire pour les équipements, points, systèmes et métadonnées opérationnelles ;
 - projection RDF validée par SHACL, sans substituer le graphe sémantique à PostgreSQL, TimescaleDB, OpenUSD ou aux solveurs ;
-- BACnet/IP pour les futurs échanges avec le BMS ;
+- BACnet/SC comme cible des nouvelles intégrations BMS ; BACnet/IP uniquement via une passerelle segmentée pour l'existant ;
 - OPC UA comme interface industrielle normalisée ;
+- MQTT accompagné de Sparkplug lorsque la télémétrie edge nécessite un modèle d'état et de cycle de vie ;
+- Project Haystack comme adaptateur possible pour les BMS existants, sans autorité canonique ;
 - DCGM pour la future télémétrie des équipements NVIDIA.
+
+Les connecteurs réels resteront hors du premier noyau, en lecture seule et isolés de la simulation. DCGM visera les GPU NVIDIA de data center ; la machine GeForce locale utilisera un contrat simulé ou le sous-ensemble réellement disponible. L'Asset Administration Shell, RealEstateCore, Slurm, Kubernetes et les autres écosystèmes ne seront ajoutés qu'avec un cas client et une frontière d'autorité définis.
 
 ### 6.10 Exécution locale, déploiement et observabilité
 
@@ -712,7 +758,7 @@ Le développement est local-first. Omniverse Kit s'exécute nativement sur le po
 
 Le premier environnement ne sera pas découpé en microservices indépendamment déployés sans nécessité. Les frontières logiques et Protocol Buffers permettront une séparation ultérieure, mais un déploiement simple, observable et reproductible est prioritaire. Un service lourd ou instable, notamment un solveur externe, devra pouvoir être isolé dans un processus afin qu'un échec produise un diagnostic sans corrompre le run ou l'interface.
 
-Les logs seront structurés et corrélés par run, composant et temps simulé. Les métriques de santé, temps de calcul, mémoire, GPU, latence, pas rejetés et erreurs de solveur devront être observables. OpenTelemetry constitue la cible pour les traces et métriques applicatives ; les tableaux techniques pourront s'appuyer sur Prometheus et Grafana si leur utilité est démontrée.
+Les logs seront structurés et corrélés par run, composant et temps simulé. Les métriques de santé, temps de calcul, mémoire, GPU, latence, pas rejetés et erreurs de solveur devront être observables. OpenTelemetry constitue la cible pour les traces et métriques applicatives ; les tableaux techniques pourront s'appuyer sur Prometheus et Grafana si leur utilité est démontrée. OpenTelemetry observe le logiciel dans le temps réel et ne devient pas le stockage autoritaire des températures, puissances ou débits simulés dans le temps virtuel.
 
 Les environnements développement, test, démonstration privée et publication publique seront séparés par leurs configurations et secrets. Les migrations de base, versions de contrats, assets et modèles devront être contrôlées lors de chaque déploiement. Les sauvegardes et restaurations de PostgreSQL, TimescaleDB et des manifestes d'artefacts seront testées.
 
@@ -720,9 +766,9 @@ Les environnements développement, test, démonstration privée et publication p
 
 **Décision actée :** chaque simulation est un run immuable, isolé et reproductible. Le cockpit soumet une demande contenant le scénario et les paramètres autorisés. L'API authentifie l'appel, valide les schémas, vérifie les références et crée le manifeste du run dans PostgreSQL avant le démarrage de tout calcul.
 
-L'initialisation charge la configuration canonique figée, les bindings vers OpenDSS, Modelica, OpenUSD et les autres modèles, les conditions initiales, les workloads et la file d'événements. Les validations topologiques, sémantiques, dimensionnelles et de compatibilité doivent réussir. Une incohérence bloquante interrompt l'initialisation avec un diagnostic ; elle ne doit pas être corrigée silencieusement par une valeur par défaut.
+L'initialisation charge la configuration canonique figée, les bindings vers OpenDSS, Modelica, OpenUSD et les autres modèles, le package SSP lorsqu'il existe, les conditions initiales, les workloads et la file d'événements. Les validations topologiques, sémantiques, dimensionnelles et de compatibilité doivent réussir. Une FMU passe les validateurs de schéma et un import réel avec le couple d'outils verrouillé ; un package SSP est contrôlé contre ses connexions, unités et paramètres. Une incohérence bloquante interrompt l'initialisation avec un diagnostic ; elle ne doit pas être corrigée silencieusement par une valeur par défaut.
 
-Le moteur C++ maintient une horloge virtuelle indépendante du temps réel. Les événements simultanés sont ordonnés par une notion de micro-étape afin de distinguer, à un même instant physique, la cause, le calcul, la commande et le retour d'état. Le moteur avance vers le prochain événement ou prochain rendez-vous d'un modèle plutôt que d'imposer un pas global inutilement fin à tous les domaines.
+Le produit maintient une horloge virtuelle indépendante du temps réel, directement ou par l'intermédiaire du master de co-simulation retenu. Les événements simultanés sont ordonnés par une notion de micro-étape afin de distinguer, à un même instant physique, la cause, le calcul, la commande et le retour d'état. L'exécution avance vers le prochain événement ou prochain rendez-vous d'un modèle plutôt que d'imposer un pas global inutilement fin à tous les domaines. Le moteur C++ conserve dans tous les cas l'autorité sur le scénario, le run et l'audit de cette progression.
 
 À chaque échange, l'orchestrateur fournit aux modèles les entrées cohérentes avec le temps simulé, déclenche le calcul, vérifie les statuts et publie les sorties avec leurs unités, qualités et provenances. Les boucles fortement couplées pourront employer des itérations contrôlées avec tolérance et nombre maximal d'essais. Une absence de convergence produit un état diagnostiqué, un mode dégradé préautorisé ou l'arrêt du run selon le contrat ; elle ne produit pas une valeur présentée comme valide.
 
@@ -784,7 +830,7 @@ Le parcours public rejoue un sous-ensemble accepté des scénarios avec 3D lég�
 
 ### 9.1 Intégrité canonique et sémantique
 
-Tous les actifs du périmètre disposent d'identités stables et de bindings vérifiables vers leurs représentations. Les ports et connexions sont compatibles, les contraintes de base de données passent et la projection ASHRAE 223P/Brick satisfait le profil SHACL figé. Aucun doublon ou mapping orphelin ne peut être ignoré dans un run accepté.
+Tous les actifs du périmètre disposent d'identités stables et de bindings vérifiables vers leurs représentations. Les ports et connexions sont compatibles, les contraintes de base de données passent, chaque IFC importé satisfait le schéma et l'IDS applicables, et la projection ASHRAE 223P/Brick satisfait le profil SHACL figé. Aucun doublon ou mapping orphelin ne peut être ignoré dans un run accepté. Un export Web accepté conserve les UUID et la provenance au moyen de son manifeste USD–glTF.
 
 ### 9.2 Reproductibilité et traçabilité
 
@@ -792,7 +838,7 @@ Un scénario déterministe rejoué avec la même configuration et les mêmes ver
 
 ### 9.3 Crédibilité des modèles
 
-Chaque modèle utilisé pour une affirmation technique possède son dossier de crédibilité, ses tests, son domaine de validité et ses critères d'acceptation. Les bilans de puissance, énergie et masse ferment dans les tolérances justifiées pour le cas. Les tolérances ne seront pas choisies pour faire réussir un modèle après observation du résultat ; elles seront établies à partir de l'usage, des données et des références avant l'acceptation.
+Chaque modèle utilisé pour une affirmation technique possède son dossier de crédibilité, ses vérifications autorisées, son domaine de validité et ses critères d'acceptation. Les bilans de puissance, énergie et masse ferment dans les tolérances justifiées pour le cas. Les tolérances ne seront pas choisies pour faire réussir un modèle après observation du résultat ; elles seront établies à partir de l'usage, des données et des références avant l'acceptation. La CFD documente les incertitudes et convergences demandées par son plan ASME V&V 20 ; les études électriques sélectionnées disposent d'une comparaison indépendante et expliquée.
 
 ### 9.4 Couplage de bout en bout
 
@@ -800,23 +846,23 @@ Le scénario de perte réseau doit traverser au minimum l'électricité, le refr
 
 ### 9.5 Robustesse logicielle
 
-Les contrôles de build, contrats, intégration, scénarios de référence et migrations passent dans l'intégration continue. Les tests unitaires en sont exclus sauf demande explicite du propriétaire. Les entrées invalides, échecs de solveur, pertes de service, timeouts, messages dupliqués et reprises ne créent pas de résultat silencieusement corrompu. Les sauvegardes et restaurations des données essentielles sont vérifiées.
+Les contrôles de build, Buf, contrats, IDS, SHACL, intégration, scénarios de référence et migrations passent dans l'intégration continue ou dans la campagne planifiée appropriée. Les tests unitaires en sont exclus sauf demande explicite du propriétaire. Les entrées invalides, échecs de solveur, pertes de service, timeouts, messages dupliqués et reprises ne créent pas de résultat silencieusement corrompu. Les sauvegardes et restaurations de PostgreSQL, TimescaleDB et des manifestes d'artefacts sont vérifiées, y compris après une migration représentative.
 
 ### 9.6 Performance de l'application d'ingénierie
 
 La tranche verticale complète doit fonctionner sur la machine actuelle sans RTX Pro 6000 et sans épuiser la mémoire physique. Le budget de référence conserve au moins vingt pour cent de mémoire système disponible pendant une démonstration nominale, vise au minimum trente images par seconde dans le viewport de référence et maintient le cockpit réactif pendant le calcul. Les campagnes CFD complètes sont exclues de cette contrainte interactive et s'exécutent hors ligne.
 
-Si une scène dépasse ce budget, le projet doit corriger les payloads, niveaux de détail, instances, textures, fréquence de télémétrie ou modèles actifs avant d'exiger un matériel supérieur. Les mesures seront enregistrées avec la scène, la résolution, le pilote, la configuration graphique et la version du logiciel.
+Si une scène dépasse ce budget, le projet doit corriger les payloads, niveaux de détail, instances, textures, fréquence de télémétrie ou modèles actifs avant d'exiger un matériel supérieur. Les mesures seront enregistrées avec la scène, la résolution, le pilote, la configuration graphique, la version Kit et les extensions. La combinaison validée doit survivre à un redémarrage depuis un environnement propre avant d'être inscrite comme baseline.
 
 ### 9.7 Performance et accessibilité du site public
 
-Le site doit rester compréhensible sans session GPU distante. Sur une connexion et un ordinateur grand public définis par le protocole de test, le contenu principal doit apparaître en moins de trois secondes, le parcours doit devenir interactif en moins de cinq secondes et la scène doit viser trente images par seconde. Le premier téléchargement 3D compressé est limité à vingt-cinq mégaoctets ; les détails supplémentaires sont chargés progressivement.
+Le site doit rester compréhensible sans session GPU distante. Sur une connexion et un ordinateur grand public définis par le protocole de test, le contenu principal doit apparaître en moins de trois secondes, le parcours doit devenir interactif en moins de cinq secondes et la scène doit viser trente images par seconde sur la voie WebGL2 de référence. Le premier téléchargement 3D compressé est limité à vingt-cinq mégaoctets ; les détails supplémentaires sont chargés progressivement. WebGPU ne peut pas devenir une condition d'accès tant que la baseline de compatibilité ne l'autorise pas explicitement.
 
 Le parcours essentiel doit rester utilisable au clavier, les informations critiques ne dépendront pas uniquement de la couleur et une alternative textuelle ou audiovisuelle sera disponible lorsque la 3D ne peut pas être rendue. Les budgets pourront être resserrés après mesure, mais pas élargis sans justification documentée.
 
 ### 9.8 Sécurité et confidentialité
 
-Les accès, rôles, secrets, journaux, dépendances, licences et exports publics satisfont les règles de la section 5.19. Aucun test public ne permet d'accéder aux services d'ingénierie ou à une future zone OT. Les données et assets publiés ont fait l'objet d'une revue de diffusion et les vulnérabilités critiques connues sont traitées ou formellement acceptées avant livraison.
+Les accès, rôles, secrets, journaux, dépendances, licences et exports publics satisfont les règles de la section 5.19. Aucun contrôle public ne permet d'accéder aux services d'ingénierie ou à une future zone OT. Les données et assets publiés ont fait l'objet d'une revue de diffusion et les vulnérabilités critiques connues sont traitées ou formellement acceptées avant livraison. La distribution possède son SBOM, son registre de licences logicielles et d'assets, sa politique de support et son analyse d'applicabilité CRA, NIS2, Data Act et RGPD.
 
 ### 9.9 Qualité pédagogique et commerciale
 
@@ -824,7 +870,7 @@ Un prospect non spécialiste doit pouvoir comprendre le problème, la chaîne ca
 
 ### 9.10 Définition de terminé
 
-Une capacité est terminée lorsque ses exigences sont traçables, son code et ses données sont versionnés, ses tests passent, ses performances sont mesurées, sa sécurité est revue, sa documentation est à jour, son exemple reproductible fonctionne depuis un environnement propre et ses limites sont publiées. Une vidéo ou une capture ne remplace pas ces preuves.
+Une capacité est terminée lorsque ses exigences sont traçables, son code et ses données sont versionnés, ses vérifications autorisées passent, ses performances sont mesurées, sa sécurité et ses licences sont revues, sa documentation est à jour, son exemple reproductible fonctionne depuis un environnement propre et ses limites sont publiées. Une vidéo ou une capture ne remplace pas ces preuves.
 
 ## 10. Hors périmètre et limites
 
@@ -833,6 +879,8 @@ Une capacité est terminée lorsque ses exigences sont traçables, son code et s
 Le projet n'est pas un outil certifié de dimensionnement, de sélectivité, de protection incendie ou de conformité réglementaire. Les résultats destinés à un site client devront être revus et, lorsque nécessaire, produits ou validés avec les outils, données et professionnels habilités appropriés.
 
 Le jumeau interactif ne calcule pas en permanence les transitoires électromagnétiques à la microseconde, chaque paquet réseau, chaque instruction processeur, la combustion détaillée ou la CFD complète du bâtiment. Ces phénomènes peuvent être étudiés par des outils spécialisés puis référencés, agrégés ou réduits lorsqu'ils sont nécessaires à une décision.
+
+FDS ne sera pas utilisé pour simuler l'évacuation et PhysicsNeMo ne sera pas ajouté pour produire artificiellement une couche IA. Le réseau informatique restera agrégé tant qu'un cas n'exige pas une étude paquet par paquet avec ns-3. Les connecteurs BACnet, OPC UA, MQTT, DCGM, Slurm ou Kubernetes ne seront pas inclus dans le noyau avant l'existence d'une source réelle, d'un contrat et d'un cas de décision.
 
 Le site public ne lance pas de solveur autoritaire et n'offre pas une session Omniverse anonyme permanente. Il rejoue des artefacts contrôlés. La commande d'équipements réels, la connexion bidirectionnelle à une installation de production et le traitement de données client sensibles ne font pas partie du démonstrateur public.
 
@@ -844,9 +892,9 @@ L'intégralité du bâtiment et tous les niveaux de détail ne seront pas charg�
 
 ## 11. Organisation du monorepo et gouvernance technique
 
-**Décision actée :** le produit sera créé dans un nouveau dépôt greenfield distinct du clone NVIDIA DSX. Le clone actuel restera une référence en lecture seule pour étudier des patterns, assets autorisés et extensions. Aucun composant du produit ne dépendra de l'interface DSX ou d'un fichier présent uniquement dans ce clone.
+**Décision actée :** le produit est développé dans le présent dépôt greenfield, distinct du clone NVIDIA DSX. Le clone DSX reste une référence en lecture seule pour étudier des patterns, assets autorisés et extensions. Aucun composant du produit ne dépendra de l'interface DSX ou d'un fichier présent uniquement dans ce clone.
 
-Le nom définitif du dépôt reste un choix de marque sans effet sur l'architecture. Lors de l'initialisation, cette spécification sera copiée dans le nouveau dépôt et deviendra sa référence. Les composants NVIDIA réutilisés devront être identifiés avec leur licence, leur version et la raison de leur utilisation.
+Le nom commercial définitif reste un choix de marque sans effet sur l'architecture. Cette spécification est la référence du dépôt. Les composants NVIDIA réutilisés devront être identifiés avec leur licence, leur version et la raison de leur utilisation.
 
 La structure cible est la suivante :
 
@@ -862,7 +910,7 @@ services/
 adapters/
   opendss/ modelica/ openfoam/ fds/ telemetry/
 packages/
-  contracts/ domain-model/ scenario-schema/ ui/
+  contracts/ domain-model/ scenario-schema/ semantic-profile/ ui/
 models/
   electrical/ thermal/ hydraulic/ airflow/ compute/ controls/ human/
 assets/
@@ -876,107 +924,152 @@ infra/
 tests/
   contract/ integration/ scenarios/ performance/ security/
 docs/
-  specification/ architecture-decisions/ models/ procedures/ reports/
+  specification/ toolchain/ architecture-decisions/ models/ procedures/ reports/
 tools/
-  asset-pipeline/ publication/ validation/
+  asset-pipeline/ publication/ validation/ cosimulation-spikes/
 ```
 
-Les contrats Protocol Buffers, schémas de scénario, profil sémantique et migrations sont des produits versionnés. Une modification incompatible nécessite une migration ou une nouvelle version ; elle ne doit pas être synchronisée manuellement dans plusieurs langages. Les générateurs seront privilégiés pour les types et clients dérivables.
+Les contrats Protocol Buffers, schémas de scénario, packages SSP, profil sémantique, IDS, manifestes d'artefacts et migrations sont des produits versionnés. Une modification incompatible nécessite une migration ou une nouvelle version ; elle ne doit pas être synchronisée manuellement dans plusieurs langages. Les générateurs seront privilégiés pour les types et clients dérivables. Buf contrôlera les contrats Protobuf, dbmate appliquera les migrations SQL et mp-units protégera les grandeurs C++.
 
-Le code C++, Python, TypeScript, modèles Modelica, définitions OpenDSS, schémas, fichiers USDA et documentation textuelle seront revus et testés. Les assets binaires volumineux seront placés dans le stockage d'artefacts ou Git LFS seulement lorsqu'une révision Git est réellement nécessaire. Les sources et dérivés ne devront pas être confondus.
+Le code C++, Python, TypeScript, modèles Modelica, définitions OpenDSS, schémas, fichiers USDA et documentation textuelle seront revus et vérifiés par les moyens autorisés adaptés. Les assets binaires volumineux seront placés dans le stockage d'artefacts ou Git LFS seulement lorsqu'une révision Git est réellement nécessaire. Les sources, fichiers importés, dérivés d'exécution et artefacts publics ne devront pas être confondus.
 
 Chaque décision architecturale structurante recevra un ADR. Chaque modèle recevra une fiche de crédibilité. Chaque scénario recevra une spécification et un rapport de référence. Les propriétaires de code peuvent être une même personne au départ, mais les responsabilités restent explicites afin de permettre une future équipe.
 
 ## 12. Stratégie d'incréments et feuille de route
 
-**Décision actée :** le développement suit des tranches verticales démontrables. Chaque incrément doit fonctionner de bout en bout, produire des tests et préserver l'architecture finale. Aucun calendrier arbitraire n'est inscrit avant estimation du backlog et mesure des premiers prototypes.
+**Décision actée :** le développement suit des tranches verticales démontrables et des portes de sortie explicites. Un incrément ne commence pas parce que le précédent paraît visuellement avancé ; il commence lorsque les contrats, artefacts et preuves dont il dépend sont disponibles. Aucun calendrier arbitraire n'est inscrit avant estimation du backlog et mesure des prototypes. L'ordre ci-dessous protège le chemin critique, mais autorise les travaux parallèles qui n'introduisent ni seconde source de vérité ni intégration fictive.
 
-### 12.1 Fondation du produit
+### 12.1 Gouvernance, décisions irréversibles et environnement reproductible
 
-Créer le nouveau dépôt, les conventions, l'intégration continue, les environnements reproductibles, PostgreSQL/TimescaleDB, le stockage d'artefacts, les contrats, le registre canonique minimal et les identifiants. Installer une scène OpenUSD vide, une application Kit minimale, un cockpit React minimal, le moteur C++ et un premier échange gRPC produisant un run traçable sans physique complexe.
+Le dépôt existe déjà et `docs/toolchain/TOOLCHAIN_BASELINE.md` fixe désormais la première sélection argumentée de C++, Visual Studio, CMake, vcpkg, Node, Python, PostgreSQL, TimescaleDB, Kit et des outils transverses. La première tranche d'implémentation matérialise cette baseline dans les manifests, verrous, scripts de contrôle et la matrice pilote–Kit–extensions, puis mesure les candidates avant leur promotion. Elle décide l'édition TimescaleDB, initialise dbmate, vcpkg, uv, Buf, les secrets locaux, le stockage adressé par contenu, le SBOM et le registre de licences des assets. Les ADR initiaux couvrent l'identité canonique, les formats et autorités, la licence TimescaleDB, le stockage d'artefacts, la stratégie Kit et la sécurité des zones.
 
-### 12.2 Tranche sémantique et 3D
+La porte de sortie est un clone propre capable de vérifier les versions, lancer les services de fondation, appliquer puis rejouer les migrations, sauvegarder et restaurer une base vide, écrire et relire un artefact par empreinte, et produire les inventaires de dépendances sans secret ni étape manuelle non documentée.
 
-Construire la hiérarchie du site fictif, la zone de data hall, les premiers équipements paramétriques et leurs niveaux de détail. Relier chaque prim aux actifs, ports et connexions canoniques. Produire le profil ASHRAE 223P/Brick minimal, ses formes SHACL et la sélection synchronisée entre Kit, React et PostgreSQL.
+### 12.2 Squelette vertical de bout en bout
 
-### 12.3 Tranche électrique
+Cette tranche crée un seul actif fictif et un seul run sans physique complexe, mais traverse déjà la future architecture. PostgreSQL porte l'UUID et sa configuration ; un contrat Protobuf validé par Buf atteint le moteur C++ ; FastAPI expose une projection ; Kit affiche un prim lié à l'UUID ; React sélectionne le même actif ; TimescaleDB reçoit une petite série ; le pipeline produit un GLB et un manifeste public contenant la même identité. OpenTelemetry corrèle l'exécution réelle au run sans remplacer ses séries simulées.
 
-Modéliser la chaîne HTA–BT–UPS–groupe–PDU–baies de référence dans OpenDSS et C++, avec charges, protections, batteries, carburant, états et événements. Valider les bilans et séquences, puis afficher les résultats sans encore exiger toute la thermique détaillée.
+La porte de sortie est une démonstration reproductible depuis un environnement propre dans laquelle la sélection et la provenance sont cohérentes de la base jusqu'à Kit, React et l'export Web. Une rupture Protobuf, un mapping orphelin, une unité absente ou une migration invalide doit échouer avec un diagnostic. Cette tranche empêche de repousser l'intégration et la publication à la fin du projet.
 
-### 12.4 Tranche thermique hybride
+### 12.3 Pipeline BIM, CAO, sémantique et assets
 
-Ajouter la production frigorifique, la boucle hydraulique, la branche air, le CDU et la branche direct-to-chip dans Modelica. Produire une première campagne CFD de la salle, construire le modèle réduit et valider les échanges puissance–chaleur–température sur le matériel local.
+La chaîne d'ingestion traite un petit IFC 4.3 contrôlé par une IDS, extrait ses entités avec IfcOpenShell, produit un rapport IfcTester, crée ou associe les actifs canoniques et génère un dérivé USD. Elle ajoute un équipement STEP ou JT converti par le service CAD, les règles de repère et d'unité, les variantes et LOD, la fiche de provenance, les droits de publication et le premier profil ASHRAE 223P/Brick validé par SHACL. Le mapping IFC–registre–USD–RDF reste explicite et versionné.
 
-### 12.5 Tranche informatique et réseau
+La porte de sortie exige qu'une modification de nom, de hiérarchie visuelle ou de LOD ne change pas l'identité, qu'un IFC non conforme soit rejeté avant import, que chaque asset publié possède une licence et une empreinte, et que la sélection reste synchronisée après optimisation USD et export glTF.
 
-Ajouter les ressources, les trois classes de workloads, l'ordonnanceur, les courbes de puissance, la chaleur localisée et le modèle de flux réseau. Fermer la boucle dans laquelle placement, puissance, alimentation, température et throttling s'influencent mutuellement.
+### 12.4 Preuve de co-simulation et architecture temporelle
 
-### 12.6 Tranche automatismes et humains
+Un prototype minimal couple une source électrique simplifiée, une FMU thermique et un automate discret. Le même scénario est exécuté avec HELICS, OMSimulator/SSP et la boucle C++ minimale. FMI 2.0.5 est la baseline ; une FMU FMI 3.0.2 est évaluée seulement si l'exporteur et l'importeur verrouillés la supportent. Les essais couvrent rendez-vous temporels, événements simultanés, pas différents, convergence, timeout, état invalide, arrêt, reprise, checkpoint et déterminisme.
 
-Implémenter les capteurs, actionneurs, régulations, machines à états, BMS/EPMS/DCIM, alarmes, modes, contrôle d'accès, première logique incendie, rôles, habilitations et procédure d'intervention. Vérifier les commandes, interverrouillages, retours d'état et délais.
+La porte de sortie est un ADR qui retient le mécanisme de synchronisation et documente les alternatives rejetées, les limites et le plan de repli. Le scénario rejoué doit conserver l'ordre causal et les résultats dans les tolérances, et son package SSP doit suffire à reconstruire les connexions et paramètres de modèles sans devenir une copie du registre métier.
 
-### 12.7 Scénario transversal et crédibilité
+### 12.5 Tranche électrique crédible
 
-Assembler le scénario de perte du réseau public, ses variantes et ses métriques. Produire les dossiers de crédibilité, tests de régression, analyses de sensibilité, rapports de performance et timeline causale. Aucun scénario ne passe à la publication avant ce jalon.
+La tranche construit la chaîne HTA–BT–UPS–batterie–groupe–ATS/STS–PDU–baies et auxiliaires dans le registre, OpenDSS et C++. Elle introduit états, manœuvres, interverrouillages, courbes, protections, pertes, charge réellement fournie, carburant et délestage. Les valeurs sont synthétiques et sourcées ou clairement déclarées comme telles. Kit et React ne font qu'expliquer les résultats autoritaires.
 
-### 12.8 Expérience d'ingénierie
+La porte de sortie comprend le bilan électrique, des cas manuels, les séquences réseau–UPS–groupe, un défaut isolé et des points de court-circuit recalculés avec pandapower selon IEC 60909. Les écarts sont expliqués. Aucune revendication de réglage réel ou de conformité n'est faite sans revue compétente ou outil d'ingénierie approprié.
 
-Finaliser la navigation, l'inspection, les coupes, l'isolation des systèmes, les overlays, courbes, alarmes, procédures, comparaison de runs et outils de diagnostic. Optimiser la scène pour conserver la réserve mémoire et la fluidité définies dans les critères d'acceptation.
+### 12.6 Tranche thermohydraulique, aéraulique et CFD
 
-### 12.9 Publication commerciale
+La tranche verrouille Modelica Buildings et OpenModelica, puis représente production frigorifique, pompes, échangeurs, branche air, CRAH, inerties, CDU et refroidissement direct-to-chip. Elle ferme le bilan entre puissance informatique, pertes électriques et chaleur évacuée. Un cas OpenFOAM limité mais représentatif est exécuté sous WSL2 ou Linux, avec maillage, résidus, conditions aux limites, convergence et export VTK. Un modèle réduit non neuronal est construit en premier pour l'interactivité.
 
-Construire le pipeline USD vers glTF/GLB, la compression, les niveaux de détail, le manifeste public et le replay. Réaliser le parcours prospect, la version exploratoire, les preuves de compétence, les appels à action et la démonstration privée haute fidélité, avec tests de performance, accessibilité et confidentialité.
+La porte de sortie exige la conservation de la masse et de l'énergie, des comparaisons analytiques ou constructeur, un plan ASME V&V 20, une étude de sensibilité de maillage et un modèle réduit qui annonce son erreur et refuse ou signale les entrées hors domaine. PhysicsNeMo ne peut être envisagé qu'après cette preuve et après constitution d'un corpus séparant entraînement et validation.
 
-### 12.10 Extension du cycle de vie
+### 12.7 Charge informatique, réseau et boucle cyber-physique
 
-Ajouter les workflows de conception, construction, commissioning, exploitation, maintenance, formation, modification et fin de vie, puis les connecteurs de télémétrie réels en lecture seule. Chaque extension doit réutiliser les identités, configurations, preuves et contrats déjà établis.
+La tranche introduit les ressources physiques, les trois classes de workloads, les files, politiques de placement, profils de puissance, chaleur localisée, checkpoint, migration, throttling et un modèle agrégé de réseau. Elle ferme la boucle dans laquelle l'activité informatique crée charge et chaleur, tandis que l'alimentation et le refroidissement limitent la performance et modifient l'ordonnancement. Les contrats futurs de DCGM, Slurm ou Kubernetes peuvent être simulés, mais aucun connecteur réel n'est requis.
 
-### 12.11 Industrialisation et offres client
+La porte de sortie est un run où un changement de workload modifie de manière traçable puissance, température et performance, puis où une contrainte physique provoque une décision informatique explicable. Un modèle paquet par paquet ou ns-3 ne sera ajouté que si une conclusion dépend de cette fidélité.
 
-Extraire les composants réutilisables, modèles de projet, pipelines d'import, connecteurs et tableaux de bord. Documenter les niveaux d'offre allant du produit connecté au jumeau multiphysique, les responsabilités client, les exigences de données, les limites de garantie et la méthode de cadrage d'une mission.
+### 12.8 Automatismes, supervision, sécurité et humain
 
-Chaque incrément se termine par une démonstration reproductible depuis un environnement propre, un rapport de tests, une mesure de performance, une revue des risques et la mise à jour de la spécification. Un incrément incomplet ne sera pas masqué par une scène plus spectaculaire.
+La tranche ajoute capteurs, actionneurs, régulations, machines à états, matrices cause-effet, BMS/EPMS/DCIM simulés, alarmes, modes, contrôle d'accès, détection incendie, rôles, habilitations et procédures. Elle distingue ordre, accusé, retour d'état, observation et état physique. Les délais de détection, diagnostic, déplacement et action restent sourcés ou synthétiques identifiés. La fumée et la chaleur détaillées peuvent ultérieurement utiliser FDS ; l'évacuation reste dans le modèle procédural, jamais dans FDS+Evac.
+
+La porte de sortie vérifie les interverrouillages, bandes mortes, alarmes, droits, modes dégradés, erreur de capteur et intervention humaine sur une timeline causale. Aucun adaptateur OT réel n'est nécessaire ; les futures frontières BACnet/SC, BACnet/IP legacy, OPC UA et MQTT/Sparkplug sont testées par contrats et restent en lecture seule.
+
+### 12.9 Scénario transversal de référence et dossier de crédibilité
+
+Le scénario de perte du réseau public assemble tous les domaines sans modification manuelle de leur état interne. Il calcule UPS, batteries, démarrage et connexion des groupes, reprise ou perte du froid, températures, puissance disponible, workloads, alarmes et actions humaines. Ses variantes couvrent groupe indisponible, batterie dégradée, pompe perdue, capteur erroné et erreur de procédure. Les métriques ISO/IEC 30134 ou de disponibilité utilisées déclarent leurs frontières.
+
+La porte de sortie comprend les dossiers NASA-STD-7009B, les preuves de domaine, les incertitudes, sensibilités, bilans, comparaisons indépendantes, limites et niveaux de preuve publics. Le run est immuable, rejouable, comparable et explique chaque conséquence importante. Aucun scénario ne passe à la publication commerciale avant cette acceptation.
+
+### 12.10 Application d'ingénierie haute fidélité
+
+Cette tranche transforme les surfaces minimales en outil cohérent : navigation, inspection, recherche, coupes, isolation de systèmes, overlays électriques et thermiques, courbes, alarmes, procédures, comparaison de runs, diagnostics de solveur et explication causale. La scène utilise payloads, instanciation, LOD et textures adaptées à la machine. La baseline pilote–Kit–extensions et les droits de redistribution sont figés pour la démonstration.
+
+La porte de sortie reprend les budgets de mémoire, trente images par seconde et réactivité du cockpit sur la machine actuelle, avec mesures enregistrées. Une session Kit App Streaming/WebRTC privée est testée séparément ; son échec ne doit pas rendre le dossier d'ingénierie local inutilisable.
+
+### 12.11 Publication Web et parcours commercial
+
+La chaîne de publication transforme uniquement un run accepté et une scène autorisée en glTF/GLB optimisé, textures KTX2, LOD, séries agrégées et manifeste public. Le site propose parcours prospect, exploration libre, explication causale, hypothèses, niveau de preuve, transférabilité sectorielle et appel à action. WebGL2 reste la baseline ; WebGPU est une amélioration progressive et une alternative guidée, textuelle ou audiovisuelle couvre les appareils insuffisants.
+
+La porte de sortie combine budgets de chargement et de fluidité, accessibilité, contrôle clavier, confidentialité, absence de lien vers l'ingénierie ou l'OT et vérification de chaque droit de publication. Le récit public et la démonstration Kit doivent décrire les mêmes faits sans transformer une donnée synthétique en mesure réelle ni une comparaison en certification.
+
+### 12.12 Cycle de vie, télémétrie réelle et offres réutilisables
+
+Après la preuve publique, le produit étend les configurations `as-designed`, `as-built`, `as-commissioned` et `as-operated`, puis les workflows de commissioning, exploitation, maintenance, formation, modification et fin de vie. Un premier connecteur réel en lecture seule pourra être choisi selon un cas client : BACnet/SC ou passerelle BACnet/IP, OPC UA, Haystack, MQTT/Sparkplug, DCGM, Slurm ou Kubernetes. L'offre est déclinée du produit connecté et jumeau télémétrique jusqu'au jumeau multiphysique.
+
+La porte de sortie exige une analyse d'autorité et de sécurité du connecteur, la réconciliation entre données réelles et simulées, les exports Data Act applicables, la protection des données personnelles, la stratégie CRA/NIS2, les responsabilités client et les limites contractuelles. Les composants réutilisables sont extraits seulement après une seconde utilisation réelle ou démontrée, pas par anticipation.
+
+### 12.13 Discipline d'exécution et prévention du slop
+
+Chaque tranche commence par une exigence, une source de vérité, un contrat, une donnée d'entrée, un critère d'acceptation et un responsable identifiés. Elle se termine par une démonstration reproductible depuis un environnement propre, les vérifications autorisées, une mesure de performance, une revue des risques et licences, les artefacts de preuve et la documentation à jour. Les tests unitaires restent exclus sauf demande explicite du propriétaire ; cette règle ne permet pas d'omettre compilation, contrats, intégrations, scénarios, bilans, migrations ou comparaisons nécessaires.
+
+Le backlog ne doit pas ouvrir simultanément plusieurs squelettes sans intégration. Un framework, microservice, bus, ontologie, connecteur ou modèle IA n'entre dans le produit qu'en réponse à une exigence de la tranche active et après comparaison avec l'existant. Aucun code généré, fausse donnée, écran vide, abstraction sans consommateur ou asset sans provenance ne compte comme progression. Une tranche bloquée produit un diagnostic et une décision explicite ; elle n'est pas contournée par une couche visuelle plus spectaculaire.
 
 ## 13. Décisions considérées comme actées
 
-- OpenUSD est la colonne vertébrale de la scène d'ingénierie ; Omniverse Kit assure le rendu RTX et l'interaction 3D haute fidélité.
-- React assure le cockpit d'ingénierie, les vues opérationnelles et le site public ; React Three Fiber et glTF/GLB assurent la 3D publique dérivée.
-- Kit desktop est le mode principal de développement ; WebRTC est réservé aux démonstrations distantes temporaires.
-- Le moteur d'orchestration principal est développé en C++20 et communique par gRPC/Protocol Buffers avec des adaptateurs spécialisés.
-- FMI 3.0.2 est la cible des nouveaux modèles dynamiques ; l'import FMI 2.0 reste compatible.
+- OpenUSD est la colonne vertébrale de la scène d'ingénierie ; Omniverse Kit, construit depuis le Kit App Template moderne avec versions verrouillées, assure le rendu RTX et l'interaction haute fidélité.
+- React assure le cockpit et le site public ; React Three Fiber, WebGL2 et glTF/GLB assurent la 3D publique dérivée, tandis que WebGPU reste une amélioration progressive.
+- Kit desktop est le mode principal de développement ; WebRTC est réservé aux démonstrations distantes temporaires et dimensionnées.
+- Le moteur produit est développé en C++20 avec mp-units et communique par gRPC/Protocol Buffers ; Buf contrôle l'évolution des contrats.
+- `docs/toolchain/TOOLCHAIN_BASELINE.md` gouverne les versions, statuts de validation et compatibilités ; les verrous exécutables doivent lui rester cohérents et aucune mise à niveau majeure ne peut être silencieuse.
+- FMI 2.0.5 est la baseline de production, FMI 3.0.2 est promu modèle par modèle après preuve et SSP 2.0.1 décrit les systèmes composés.
+- Le master temporel sera choisi par ADR après comparaison HELICS, OMSimulator/SSP et boucle C++ minimale ; le C++ conserve scénarios, runs, audit et politiques.
 - Les solveurs spécialisés restent les sources de vérité de leur domaine et l'orchestrateur ne réimplémente pas leurs lois physiques.
-- PostgreSQL et TimescaleDB sont utilisés dès le début ; PostgreSQL porte le registre canonique et TimescaleDB les séries temporelles.
-- Les fichiers lourds sont conservés dans un stockage d'artefacts, tandis que Git porte le code, les contrats et les sources textuelles.
-- ASHRAE 223P constitue la cible structurante de la sémantique opérationnelle et de la topologie avec un profil figé ; Brick complète le vocabulaire et IFC conserve son rôle BIM et géométrique.
-- Les comportements sont répartis entre des modèles de domaine coordonnés par des contrats d'échange versionnés.
-- Le domaine électrique couvre la distribution triphasée depuis l'arrivée HTA jusqu'aux serveurs avec OpenDSS pour le calcul RMS et C++ pour les états, protections et séquences.
-- La simulation électrique opérationnelle couvre quelques dizaines de millisecondes à plusieurs heures ; les études EMT restent externes lorsqu'elles sont nécessaires.
+- PostgreSQL et TimescaleDB sont utilisés dès le début ; PostgreSQL porte le registre canonique, TimescaleDB les séries temporelles et dbmate les migrations SQL partagées.
+- L'édition et la licence TimescaleDB sont décidées avant bootstrap ; une restriction de service de la Community Edition ne sera jamais ignorée dans une offre hébergée.
+- Les fichiers lourds sont adressés par contenu dans un stockage local abstrait puis compatible S3 ; MinIO n'est pas une dépendance par défaut et Git porte le code, contrats et sources textuelles.
+- Parquet porte les exports tabulaires, Zarr v3 les tableaux multidimensionnels, VTK les champs de visualisation, OpenUSD la scène, glTF le Web, FMI les composants et SSP leurs assemblages.
+- ASHRAE 223P constitue la cible sémantique versionnée et Brick la complète ; IFC 4.3, IDS, bSDD, IfcOpenShell et IfcTester portent l'échange et le contrôle BIM.
+- Project Haystack, Asset Administration Shell et RealEstateCore sont de futurs adaptateurs de cas client, pas des modèles canoniques concurrents.
+- Le domaine électrique couvre la distribution triphasée depuis l'arrivée HTA jusqu'aux serveurs avec OpenDSS pour le run RMS et pandapower pour des vérifications indépendantes IEC 60909.
+- La simulation électrique opérationnelle couvre quelques dizaines de millisecondes à plusieurs heures ; les études EMT et validations engageantes restent externes lorsqu'elles sont nécessaires.
 - Le refroidissement de référence est hybride : air pour les baies classiques et liquide direct-to-chip pour les baies IA.
-- Modelica porte la dynamique thermohydraulique ; OpenFOAM porte la CFD détaillée hors ligne et valide un modèle réduit interactif.
-- Les charges informatiques dépendent des workloads, des ressources et de leur état ; le site exécute entraînement ou batch flexible, inférence critique et services indispensables.
+- Modelica Buildings avec OpenModelica porte la dynamique thermohydraulique ; OpenFOAM sous WSL2 ou Linux porte la CFD hors ligne et valide un modèle réduit interactif.
+- FDS est réservé à la fumée et la chaleur ; FDS+Evac est exclu, et PhysicsNeMo attend un corpus validé et une valeur démontrée face à un modèle réduit plus simple.
+- Les charges informatiques dépendent des workloads, ressources et états ; le réseau reste agrégé jusqu'à ce qu'un besoin justifie ns-3 ou une autre fidélité paquet.
 - Les automatismes, BMS, EPMS, DCIM, dispositifs de sécurité et opérateurs sont exécutables, traçables et reliés aux modèles physiques.
+- BACnet/SC est la cible des intégrations BMS modernes ; BACnet/IP reste derrière une passerelle legacy, OPC UA couvre les équipements industriels et MQTT utilise Sparkplug lorsqu'il est retenu.
 - Les scénarios injectent des causes et laissent les modèles calculer les conséquences ; les runs sont immuables, rejouables et comparables.
-- Chaque modèle et affirmation technique exige un dossier de crédibilité, un domaine de validité, des preuves et des limites explicites.
-- Les tests unitaires sont exclus par défaut et ne peuvent être créés ou exécutés que sur demande explicite du propriétaire ; les vérifications de build, contrat, intégration, scénario et crédibilité restent obligatoires selon le risque.
-- La plateforme sépare le site public, les services, la simulation, l'ingénierie et les futures connexions OT ; les connecteurs réels sont en lecture seule par défaut.
-- Le premier produit doit fonctionner sur la machine actuelle sans RTX Pro 6000 grâce aux payloads, niveaux de détail, modèles réduits et calculs lourds hors ligne.
+- Chaque modèle et affirmation technique exige un dossier de crédibilité, un domaine de validité, des preuves et des limites ; NASA-STD-7009B et ASME V&V 20 structurent les dossiers concernés.
+- Les tests unitaires sont exclus par défaut et ne peuvent être créés ou exécutés que sur demande explicite du propriétaire ; les vérifications de build, contrat, IDS, SHACL, intégration, scénario, migration et crédibilité restent obligatoires selon le risque.
+- La plateforme sépare site public, services, simulation, ingénierie et OT ; les connecteurs réels sont en lecture seule et les obligations potentielles CRA, NIS2, Data Act et RGPD sont analysées avant commercialisation.
+- Le premier produit fonctionne sur la machine actuelle sans RTX Pro 6000 grâce aux payloads, LOD, modèles réduits et calculs lourds hors ligne ; les grandes campagnes restent exportables vers Linux ou HPC.
 - Le data center sert de démonstrateur de compétences transférables et non de spécialisation commerciale exclusive.
-- Le site public n'exécute pas Omniverse ni les solveurs ; il rejoue des artefacts acceptés et reste utile sans GPU NVIDIA.
-- La cible couvre tout le cycle de vie, mais sa construction suit des tranches verticales vérifiées.
-- Le produit sera développé dans un nouveau monorepo greenfield distinct du clone NVIDIA DSX, conservé comme référence en lecture seule.
+- Le site public n'exécute ni Omniverse ni solveur autoritaire ; il rejoue des artefacts acceptés, expurgés et manifestés, et reste utile sans GPU NVIDIA.
+- La cible couvre tout le cycle de vie, mais sa construction suit la feuille de route à portes de sortie et sa discipline anti-slop.
+- Le produit est développé dans ce monorepo greenfield distinct du clone NVIDIA DSX, conservé comme référence en lecture seule.
 
 ## 14. Paramètres contrôlés restant à établir
 
 Les décisions d'architecture nécessaires à l'initialisation sont actées. Les éléments suivants ne doivent pas être inventés dans le code ; ils seront produits comme données ou documents d'ingénierie versionnés au cours des incréments correspondants.
 
-- le nom commercial et le nom définitif du dépôt ;
+- le nom commercial et l'éventuel renommage du dépôt existant ;
 - le schéma unifilaire exact, les tensions nominales, puissances, redondances, protections et régimes de neutre du site fictif ;
 - le schéma de principe hydraulique, les régimes de température, débits, puissances, courbes et stratégies de contrôle ;
 - le plan, le nombre de baies, leurs densités et la géométrie détaillée de la tranche de référence ;
 - les modèles précis de serveurs ou équipements représentatifs, leurs courbes de puissance et leurs licences de représentation ;
 - les distributions de panne et de temps humain, qui devront être sourcées ou explicitement marquées synthétiques ;
 - les tolérances numériques et physiques propres à chaque dossier de crédibilité ;
+- l'édition TimescaleDB retenue et la liste exacte de fonctions nécessaires, décidées avant le bootstrap de la base ;
+- le résultat du prototype HELICS–OMSimulator/SSP–boucle C++ et le master temporel retenu par ADR ;
+- la promotion après smoke test des versions candidates de Kit, de ses extensions, du pilote NVIDIA, de Modelica Buildings, d'OpenModelica, d'OpenDSS et d'OpenFOAM inscrites dans la baseline de toolchain ;
+- les profils FMI réellement acceptés par chaque couple exporteur–importeur et les validateurs employés ;
+- l'IDS initiale, le profil ASHRAE 223P/Brick et les mappings IFC–registre–USD–RDF ;
+- la matrice des normes et clauses effectivement appliquées au site fictif ;
 - les politiques initiales de rétention, compression et agrégation TimescaleDB, établies après mesure des débits ;
+- les seuils de passage de TimescaleDB vers Parquet, Zarr ou VTK et les politiques de conservation des résultats natifs ;
 - les budgets finaux de géométrie et de textures, resserrés après le prototype de performance ;
 - les droits de publication relatifs à l'expérience CRE Technology et à tout asset ou donnée tiers.
 
@@ -984,16 +1077,24 @@ Ces paramètres n'empêchent pas de créer le monorepo, les contrats, le registr
 
 ## 15. Validation de la spécification
 
-**Décision actée :** le cadrage fonctionnel, l'architecture, les domaines, la méthode de simulation, la stratégie de crédibilité, la sécurité, les cas d'usage, les critères d'acceptation et la feuille de route décrits dans ce document constituent la référence de départ du projet.
+**Décision actée :** le cadrage fonctionnel, l'architecture, les domaines, la méthode de simulation, la stratégie de crédibilité, la sécurité, les cas d'usage, les critères d'acceptation et la feuille de route décrits dans ce document constituent la référence de départ du projet. Cette spécification intègre les conclusions de la revue adversariale des outils, normes, licences, formats, contraintes matérielles et alternatives effectuée au 1er août 2026 ; aucun rapport d'architecture séparé n'est nécessaire pour interpréter les décisions courantes.
 
-Le document ne reçoit pas encore de numéro de version. Une version formelle sera attribuée après la relecture globale, le choix du nom du produit et la correction des éventuelles contradictions résiduelles. Cette étape n'empêche pas l'initialisation technique du nouveau monorepo.
+Le document ne reçoit pas encore de numéro de version. Une version formelle sera attribuée après la relecture globale, le choix du nom du produit et la correction des éventuelles contradictions résiduelles. Cette étape n'empêche pas le bootstrap technique du monorepo existant.
 
 Toute modification future d'une décision actée devra être explicite, justifiée et reliée à un ADR lorsqu'elle affecte l'architecture, un modèle ou un engagement. Les valeurs d'ingénierie encore absentes seront ajoutées comme configurations et preuves versionnées, sans réécrire l'intention générale.
 
 ## 16. Références structurantes
 
-Les références suivantes orientent la méthode sans impliquer automatiquement une conformité : OpenUSD et NVIDIA Omniverse pour la scène et l'application 3D ; ASHRAE 223P et Brick pour la sémantique opérationnelle ; IFC pour l'échange BIM ; FMI 3.0.2 et Modelica pour l'intégration des modèles dynamiques ; NASA-STD-7009B pour la crédibilité des modèles et simulations ; NIST SP 800-82 Rev. 3, NIST SSDF et IEC 62443 pour la cybersécurité ; glTF de Khronos pour la livraison 3D Web.
+Les références suivantes orientent la méthode sans impliquer automatiquement une conformité : OpenUSD et NVIDIA Omniverse pour la scène et l'application 3D ; ASHRAE 223P et Brick pour la sémantique opérationnelle ; IFC 4.3, IDS et bSDD pour l'échange et les exigences BIM ; FMI 2.0.5, FMI 3.0.2, SSP 2.0.1 et Modelica pour les modèles dynamiques et systèmes composés ; NASA-STD-7009B et ASME V&V 20 pour la crédibilité ; NIST SP 800-82 Rev. 3, NIST SSDF et IEC 62443 pour la cybersécurité ; glTF et KTX de Khronos pour la livraison 3D Web.
+
+Les référentiels métier comprennent la famille ISO/IEC 22237 et EN 50600 pour les infrastructures de data centers, IEC 60909 pour les études de court-circuit applicables, ASHRAE 90.4-2025 et TC 9.9 pour l'énergie et la thermique, ISO/IEC 30134 pour les indicateurs et ISO/IEC 30173:2023 pour les concepts de jumeau numérique. Les obligations européennes à qualifier avant commercialisation comprennent le Cyber Resilience Act, NIS2, le Data Act et le RGPD.
 
 Les éditions, profils et sous-parties applicables devront être figés dans les ADR ou dossiers de domaine au moment de leur implémentation. Les textes normatifs payants devront être acquis légalement si une conformité ou une application détaillée est requise.
 
-Les sources publiques de référence consultées lors du cadrage comprennent la documentation [ASHRAE 223P](https://docs.open223.info/overview/), les [connexions Brick fondées sur 223P](https://docs.brickschema.org/modeling/connections.html), la spécification [FMI 3.0.2](https://fmi-standard.org/docs/3.0.2/), la norme active [NASA-STD-7009B](https://standards.nasa.gov/standard/nasa/nasa-std-7009), le guide [NIST SP 800-82 Rev. 3](https://csrc.nist.gov/pubs/sp/800/82/r3/final), le [NIST Secure Software Development Framework](https://csrc.nist.gov/pubs/sp/800/218/final), la présentation officielle de [glTF par Khronos](https://www.khronos.org/gltf/) et la documentation [React Three Fiber](https://r3f.docs.pmnd.rs/getting-started/your-first-scene).
+Les sources publiques de scène et d'application comprennent l'[introduction OpenUSD](https://openusd.org/release/intro.html), le [Kit App Template](https://docs.omniverse.nvidia.com/services/latest/developer/app_template.html), le [packaging Kit](https://docs.omniverse.nvidia.com/kit/docs/kit-app-template/latest/docs/packaging_app.html), le [Kit App Streaming](https://docs.omniverse.nvidia.com/kit/docs/kit-app-template/latest/docs/streaming.html), les [exigences techniques Omniverse](https://docs.omniverse.nvidia.com/dev-overview/latest/common/technical-requirements.html), le [CAD Converter](https://docs.omniverse.nvidia.com/extensions/latest/ext_cad-converter/manual.html), [glTF](https://www.khronos.org/gltf/), [KTX](https://www.khronos.org/ktx/) et les pratiques de [performance React Three Fiber](https://r3f.docs.pmnd.rs/advanced/scaling-performance).
+
+Les sources d'intégration et de calcul comprennent la documentation [FMI 3.0.2](https://fmi-standard.org/docs/3.0.2/), la [validation FMI](https://fmi-standard.org/validation/), [SSP](https://ssp-standard.org/docs/main/), le support [FMI d'OpenModelica](https://openmodelica.org/doc/OpenModelicaUsersGuide/latest/fmitlm.html), [OMSimulator](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/introduction.html), [HELICS](https://docs.helics.org/en/latest/user-guide/co-simulation_overview.html), [Modelica Buildings](https://simulationresearch.lbl.gov/modelica/), les [capacités OpenDSS](https://opendss.epri.com/AboutOpenDSSCapabilities.html), les calculs [IEC 60909 de pandapower](https://pandapower.readthedocs.io/en/latest/shortcircuit.html), [OpenFOAM](https://openfoam.org/download/), les [manuels FDS](https://pages.nist.gov/fds/manuals.html), [PhysicsNeMo](https://docs.nvidia.com/physicsnemo/index.html) et [DCGM](https://docs.nvidia.com/datacenter/dcgm/latest/).
+
+Les sources de données et d'interopérabilité comprennent [IfcOpenShell et IfcTester](https://docs.ifcopenshell.org/introduction.html), l'[IDS buildingSMART](https://www.buildingsmart.org/standards/bsi-standards/information-delivery-specification-ids/), la documentation [ASHRAE 223P](https://docs.open223.info/overview/), les [connexions Brick fondées sur 223P](https://docs.brickschema.org/modeling/connections.html), les [éditions TimescaleDB](https://docs.timescale.com/about/latest/timescaledb-editions/), [Parquet](https://parquet.apache.org/docs/file-format/), [Zarr](https://zarr.readthedocs.io/en/main/user-guide/glossary/), les [formats VTK](https://docs.vtk.org/en/latest/vtk_file_formats/index.html), [BACnet/SC](https://bacnetinternational.org/bacnetsc/), [OPC UA](https://reference.opcfoundation.org/specs/OPC-10000-1/4), [Sparkplug](https://sparkplug.eclipse.org/specification/) et le contrôle de compatibilité [Buf](https://buf.build/docs/breaking/).
+
+Les sources de crédibilité, sécurité et réglementation comprennent [NASA-STD-7009B](https://standards.nasa.gov/standard/nasa/nasa-std-7009), [ASME V&V 20](https://www.asme.org/codes-standards/find-codes-standards/standard-for-verification-and-validation-in-computational-fluid-dynamics-and-heat-transfer/2009), [NIST SP 800-82 Rev. 3](https://csrc.nist.gov/pubs/sp/800/82/r3/final), le [NIST Secure Software Development Framework](https://csrc.nist.gov/pubs/sp/800/218/final), le [Cyber Resilience Act](https://eur-lex.europa.eu/eli/reg/2024/2847/2024-11-20/eng), les [questions-réponses NIS2](https://digital-strategy.ec.europa.eu/en/faqs/directive-measures-high-common-level-cybersecurity-across-union-nis2-directive-faqs) et le [Data Act](https://eur-lex.europa.eu/eli/reg/2023/2854/oj).
