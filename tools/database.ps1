@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet("Up", "Stop", "Migrate", "Status")]
+    [ValidateSet("Up", "Stop", "Migrate", "Seed", "Status")]
     [string]$Command
 )
 
@@ -11,6 +11,7 @@ Set-StrictMode -Version Latest
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $composeFile = Join-Path $repositoryRoot "infra\compose\compose.yaml"
 $migrationsDirectory = Join-Path $repositoryRoot "database\migrations"
+$referenceSeed = Join-Path $repositoryRoot "database\seeds\reference.sql"
 
 function Assert-CommandExists([string]$Name) {
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
@@ -33,6 +34,17 @@ switch ($Command) {
             throw "DATABASE_URL must be set before running migrations."
         }
         dbmate --migrations-dir $migrationsDirectory --no-dump-schema up
+    }
+    "Seed" {
+        Assert-CommandExists "docker"
+        if (-not $env:TWINS_POSTGRES_DB -or -not $env:TWINS_POSTGRES_USER) {
+            throw "TWINS_POSTGRES_DB and TWINS_POSTGRES_USER must be set before seeding."
+        }
+        if (-not (Test-Path $referenceSeed)) {
+            throw "Reference seed not found: $referenceSeed"
+        }
+        Get-Content -Raw $referenceSeed | docker compose --file $composeFile exec -T database `
+            psql -v ON_ERROR_STOP=1 -U $env:TWINS_POSTGRES_USER -d $env:TWINS_POSTGRES_DB
     }
     "Status" {
         Assert-CommandExists "dbmate"
