@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package twins.asset.v1;
+
+// AssetIdentity carries the stable identity shared by every representation of
+// a canonical asset.
+message AssetIdentity {
+  // asset_id is the canonical UUID assigned by the asset registry.
+  string asset_id = 1;
+
+  // canonical_name is a human-readable name and never replaces asset_id.
+  string canonical_name = 2;
+}
