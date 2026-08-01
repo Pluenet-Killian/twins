@@ -20,9 +20,27 @@ $eulaBreadcrumb = Join-Path $kitTemplateRoot ".omniverse_eula_accepted.txt"
 $playbackFile = Join-Path $repositoryRoot "apps\kit\template-playback.toml"
 $canonicalApplication = Join-Path $repositoryRoot "apps\kit\source\apps\twins.engineering.kit"
 $canonicalExtensions = Join-Path $repositoryRoot "apps\kit\source\extensions"
+$stateClientPipArchive = Join-Path $canonicalExtensions "twins.state.client\pip_archive"
 $generatedApplication = Join-Path $kitTemplateRoot "source\apps\twins.engineering.kit"
 $generatedExtensions = Join-Path $kitTemplateRoot "source\extensions"
 $referenceStage = Join-Path $repositoryRoot "assets\usd\reference-rack.usda"
+$kitPythonWheels = @(
+    @{
+        FileName = "protobuf-6.33.5-cp310-abi3-win_amd64.whl"
+        Url = "https://files.pythonhosted.org/packages/55/75/bb9bc917d10e9ee13dee8607eb9ab963b7cf8be607c46e7862c748aa2af7/protobuf-6.33.5-cp310-abi3-win_amd64.whl"
+        Sha256 = "3093804752167bcab3998bec9f1048baae6e29505adaf1afd14a37bddede533c"
+    },
+    @{
+        FileName = "grpcio-1.81.0-cp312-cp312-win_amd64.whl"
+        Url = "https://files.pythonhosted.org/packages/39/e3/a7c387406827a86f99ad7838b995bf9b4a182ffe2d2c439ed2873efec952/grpcio-1.81.0-cp312-cp312-win_amd64.whl"
+        Sha256 = "87e33b7afcfb3585121b5f007d2c52b8c534104d18f556e840d35193ca2a9141"
+    },
+    @{
+        FileName = "typing_extensions-4.15.0-py3-none-any.whl"
+        Url = "https://files.pythonhosted.org/packages/18/67/36e9267722cc04a6b9f15c7f3441c2363321a3ea07da7ae0c0707beb2a9c/typing_extensions-4.15.0-py3-none-any.whl"
+        Sha256 = "f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"
+    }
+)
 
 function Invoke-Checked {
     param(
@@ -76,9 +94,27 @@ function Assert-NvidiaTermsAccepted {
     New-Item -ItemType File -Path $eulaBreadcrumb -Force | Out-Null
 }
 
+function Sync-KitPythonWheels {
+    New-Item -ItemType Directory -Path $stateClientPipArchive -Force | Out-Null
+
+    foreach ($wheel in $kitPythonWheels) {
+        $destination = Join-Path $stateClientPipArchive $wheel.FileName
+        if (-not (Test-Path -LiteralPath $destination)) {
+            Invoke-WebRequest -UseBasicParsing $wheel.Url -OutFile $destination
+        }
+
+        $actualSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $destination).Hash.ToLowerInvariant()
+        if ($actualSha256 -ne $wheel.Sha256) {
+            Remove-Item -LiteralPath $destination -Force
+            throw "Kit Python wheel checksum mismatch for $($wheel.FileName). Expected $($wheel.Sha256), found $actualSha256."
+        }
+    }
+}
+
 function Sync-KitApplication {
     Assert-KitTemplateCheckout
     Assert-NvidiaTermsAccepted
+    Sync-KitPythonWheels
 
     if (-not (Test-Path -LiteralPath $generatedApplication)) {
         Push-Location $kitTemplateRoot

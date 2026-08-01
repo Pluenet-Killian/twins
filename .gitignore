@@ -75,6 +75,7 @@ kit/data/
 ov/cache/
 ov/logs/
 *.usd.tmp
+apps/kit/source/extensions/twins.state.client/pip_archive/*.whl
 
 # Simulation outputs and solver work directories
 simulation-output/

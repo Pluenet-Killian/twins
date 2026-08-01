@@ -1,0 +1,46 @@
+[package]
+title = "Twins State Client"
+version = "0.1.0"
+description = "Consumes calculated asset state and authors transient OpenUSD session opinions."
+category = "Simulation"
+keywords = ["grpc", "openusd", "state", "digital-twin"]
+
+
+[core]
+order = 2100
+
+
+[dependencies]
+"omni.kit.pip_archive" = {}
+"omni.kit.pipapi" = {}
+"omni.usd" = {}
+
+
+[settings.exts."twins.state.client"]
+enabled = true
+endpoint = "127.0.0.1:50051"
+run_id = "00000000-0000-4000-8000-000000000101"
+asset_id = "00000000-0000-4000-8000-000000000001"
+reference_prim_path = "/World/Assets/ReferenceRackA01"
+playback_rate = 1.0
+queue_capacity = 1024
+
+
+[python.pipapi]
+archiveDirs = ["pip_archive"]
+requirements = [
+    "protobuf==6.33.5",
+    "typing-extensions==4.15.0",
+    "grpcio==1.81.0",
+]
+modules = [
+    "google.protobuf",
+    "typing_extensions",
+    "grpc",
+]
+use_online_index = true
+extra_args = ["--no-index"]
+
+
+[[python.module]]
+name = "twins.state.client"
