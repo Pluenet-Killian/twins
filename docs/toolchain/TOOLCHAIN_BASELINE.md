@@ -129,8 +129,8 @@ La génération Protobuf suivra une seule configuration `buf.yaml` et `buf.gen.y
 
 | Composant | Version cible | État local | Statut | Justification |
 |---|---:|---:|---|---|
-| Omniverse Kit SDK | 110.2 | autre prototype DSX présent | candidate prioritaire | Release actuelle comportant les mises à jour et corrections Kit récentes. |
-| Kit App Template | commit exact à figer lors du scaffold | non intégré | bloquée par le scaffold | Le commit, sa licence et le bundle réellement résolu seront inscrits ensemble. |
+| Omniverse Kit SDK | 110.2.0 | autre prototype DSX en Kit 109.0.3 présent | candidate prioritaire | Release actuelle comportant les mises à jour et corrections Kit récentes ; elle doit encore réussir le build et le lancement de la scène de référence. |
+| Kit App Template | `483e364a4176f102f2d3c3aaf9f301a103d61d69` | clone détaché dans `.tools` | sélectionnée, scaffold bloqué | Commit officiel `main` vérifié le 1er août 2026, dont le changelog déclare Kit 110.2.0 ; le scaffold attend l'acceptation explicite des conditions NVIDIA. |
 | Extensions Kit | versions exactes du registre Kit 110.2 | non intégrées | bloquée par le scaffold | Une extension n'est ajoutée qu'avec usage, droit de redistribution et smoke test. |
 | OpenUSD dans Kit | version embarquée par Kit 110.2 | non résolue | sélectionnée par héritage | Ne jamais remplacer indépendamment les bibliothèques USD internes de Kit. |
 | OpenUSD autonome | 26.08 | absent | candidate | Référence et outils hors Kit seulement après essai d'ouverture aller-retour avec la scène de référence. |
