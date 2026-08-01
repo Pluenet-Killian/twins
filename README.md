@@ -119,6 +119,17 @@ corepack pnpm build
 corepack pnpm dev:cockpit
 ```
 
+L'application d'ingénierie Omniverse utilise le Kit App Template officiel verrouillé par commit. Le consentement aux conditions NVIDIA est personnel et reste hors Git. Après lecture des conditions, le premier bootstrap accepte explicitement celles-ci avec le commutateur dédié ; les exécutions suivantes réutilisent le témoin local. Aucun abonnement ou service cloud n'est créé par ces commandes.
+
+```powershell
+.\tools\kit.ps1 -Command Bootstrap -AcceptNvidiaTerms
+.\tools\kit.ps1 -Command Build
+.\tools\kit.ps1 -Command Validate
+.\tools\kit.ps1 -Command Launch
+```
+
+Le lancement ouvre par défaut `assets/usd/reference-rack.usda` dans l'application locale `Twins Engineering`. Le SDK, les extensions, caches et sorties de build restent dans `.tools` et ne sont jamais ajoutés à Git.
+
 La base locale demande un secret non committé. Copier `.env.example` vers `.env`, remplacer le mot de passe d'exemple, puis démarrer et migrer depuis la racine :
 
 ```powershell
