@@ -18,22 +18,33 @@ body {
   min-height: 100vh;
 }
 
+button {
+  font: inherit;
+}
+
 #root {
   min-height: 100vh;
 }
 
-.foundation-shell {
+.cockpit-shell {
   display: grid;
   min-height: 100vh;
-  align-content: center;
-  justify-items: start;
-  padding: clamp(2rem, 8vw, 8rem);
+  grid-template-columns: minmax(0, 0.9fr) minmax(24rem, 1.1fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+  padding: clamp(2rem, 7vw, 7rem);
   background:
-    radial-gradient(circle at 15% 20%, rgb(111 255 150 / 12%), transparent 28rem),
+    linear-gradient(90deg, rgb(9 13 11 / 96%), rgb(9 13 11 / 82%)),
+    radial-gradient(circle at 72% 20%, rgb(111 255 150 / 13%), transparent 34rem),
     #090d0b;
 }
 
-.eyebrow {
+.hero {
+  max-width: 47rem;
+}
+
+.eyebrow,
+.panel-kicker {
   margin: 0 0 1rem;
   color: #79e899;
   font-size: 0.75rem;
@@ -45,7 +56,7 @@ body {
 h1 {
   max-width: 12ch;
   margin: 0;
-  font-size: clamp(3rem, 9vw, 7rem);
+  font-size: clamp(3.5rem, 7vw, 7rem);
   font-weight: 620;
   letter-spacing: -0.06em;
   line-height: 0.9;
@@ -53,28 +64,165 @@ h1 {
 
 .summary {
   max-width: 42rem;
-  margin: 2rem 0;
+  margin: 2rem 0 0;
   color: #a9b6ad;
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.6;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.asset-panel {
+  width: 100%;
+  max-width: 48rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid #29372d;
+  border-radius: 1.5rem;
+  background: rgb(16 23 18 / 86%);
+  box-shadow: 0 2rem 6rem rgb(0 0 0 / 28%);
+  backdrop-filter: blur(1rem);
+}
+
+.panel-heading {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #29372d;
+}
+
+.panel-kicker {
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 590;
+  letter-spacing: -0.035em;
 }
 
 .status {
   display: inline-flex;
-  gap: 0.75rem;
+  flex: none;
+  gap: 0.65rem;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
   border: 1px solid #29372d;
   border-radius: 999px;
-  background: #101712;
+  background: #0d130f;
   color: #d8e4db;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .status span {
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.55rem;
+  height: 0.55rem;
   border-radius: 50%;
+  background: #d3a738;
+  box-shadow: 0 0 1rem rgb(211 167 56 / 60%);
+}
+
+.status-success span {
   background: #79e899;
   box-shadow: 0 0 1rem rgb(121 232 153 / 70%);
+}
+
+.status-error span {
+  background: #ff7067;
+  box-shadow: 0 0 1rem rgb(255 112 103 / 60%);
+}
+
+.panel-message {
+  min-height: 10rem;
+  margin: 0;
+  padding-top: 2rem;
+  color: #a9b6ad;
+}
+
+.panel-message.error {
+  color: #ffb2ad;
+}
+
+.panel-message button {
+  padding: 0.7rem 1rem;
+  border: 1px solid #5a6c60;
+  border-radius: 0.6rem;
+  background: #172019;
+  color: #edf6ef;
+  cursor: pointer;
+}
+
+.asset-properties {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.asset-properties > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid #29372d;
+}
+
+.asset-properties > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.asset-properties dt {
+  color: #7f9085;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.asset-properties dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #d8e4db;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.asset-properties .primary-property {
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+}
+
+.asset-properties .primary-property dd {
+  color: #ffffff;
+  font-family: inherit;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 580;
+  letter-spacing: -0.035em;
+}
+
+@media (max-width: 900px) {
+  .cockpit-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .asset-panel {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .panel-heading,
+  .asset-properties > div {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-heading {
+    display: grid;
+  }
+
+  .status {
+    justify-self: start;
+  }
 }

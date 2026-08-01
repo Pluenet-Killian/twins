@@ -98,13 +98,13 @@ Le workspace ne publiera pas plusieurs fichiers de dépendances concurrents. `py
 | Vite | 8.2.0 | verrouillé et compilé | sélectionnée | Développement et build des applications React. |
 | `@vitejs/plugin-react` | 6.0.5 | verrouillé et compilé | sélectionnée | Intégration React avec la ligne Vite retenue. |
 | Tailwind CSS | 4.3.3 | absent | candidate | Design system utilitaire du projet. |
-| TanStack Query | 5.101.4 | absent | candidate | État serveur et cache du cockpit. |
+| TanStack Query | 5.101.4 | verrouillé et compilé | sélectionnée | État serveur et cache du cockpit, introduit avec la première lecture réelle d'un actif. |
 | Apache ECharts | 6.1.0 | absent | candidate | Courbes, timelines et cartes de chaleur. |
 | React Flow | `@xyflow/react` 12.11.2 | absent | candidate | Vues fonctionnelles complémentaires, jamais substitut à la 3D. |
 | Three.js | 0.185.1 | absent | candidate | Renderer du dérivé Web public. |
 | React Three Fiber | 9.7.0 | absent | candidate | Intégration React du renderer Web public. |
 | Radix Dialog | 1.1.23 | absent | candidate | Première primitive accessible ; les autres packages Radix seront ajoutés à l'usage. |
-| Zod | 4.4.3 | absent | candidate | Validation aux frontières TypeScript, sans recopier les contrats Protobuf. |
+| Zod | 4.4.3 | verrouillé et compilé | sélectionnée | Validation runtime des réponses aux frontières TypeScript, sans devenir le modèle canonique interlangage. |
 
 Le choix de Node suit la [politique officielle des releases Node.js](https://nodejs.org/en/about/previous-releases) et Vite les [releases officielles Vite](https://vite.dev/releases). Les versions de packages proviennent de leur registre npm officiel. Elles restent candidates jusqu'au premier workspace installable, au build de production et au smoke navigateur ; l'agent ne doit pas rétrograder vers une ancienne recette de React, Tailwind ou Vite sans démontrer une incompatibilité.
 
