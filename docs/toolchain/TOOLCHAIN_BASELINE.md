@@ -47,18 +47,18 @@ La page NVIDIA des [exigences techniques Omniverse](https://docs.omniverse.nvidi
 
 | Composant | Version cible | État local | Statut | Justification |
 |---|---:|---:|---|---|
-| Standard C++ | C++20, extensions désactivées | non matérialisé | sélectionnée | Baseline du moteur, suffisamment moderne et compatible avec les dépendances prévues. |
-| Visual Studio Build Tools | 2022 17.14.37, build 17.14.37516.0 | absent | sélectionnée | Version 2022 maintenue et explicitement compatible avec le C++ du Kit App Template. |
-| Toolset MSVC | v143 | absent | sélectionnée | Toolset associé à Visual Studio 2022 ; ABI et intégration Kit connues. |
+| Standard C++ | C++20, extensions désactivées | compilé | sélectionnée | Baseline du moteur, suffisamment moderne et compatible avec les dépendances prévues. |
+| Visual Studio Build Tools | 2022 17.14.37, build 17.14.37516.0 | 17.14.31, build 17.14.37216.2 | alignement restant | La ligne 17.14 compile le socle ; le correctif de maintenance 17.14.37 reste la cible. |
+| Toolset MSVC | v143 | 14.44.35207, compilateur 19.44.35226 | sélectionnée | Toolset associé à Visual Studio 2022 ; ABI et intégration Kit connues. |
 | Windows SDK | 10.0.26100.0 | installé | sélectionnée | SDK Windows 11 stable, maintenu et déjà présent ; la ligne 28000 plus récente n'apporte aucun besoin projet actuel. |
-| CMake | 4.3.4 | 4.2.1 | sélectionnée | Dernière correction de la ligne 4.3 ; retenue plutôt que 4.4.0 publiée très récemment. |
-| vcpkg | tag `2026.07.29` | absent du dépôt | sélectionnée | Snapshot reproductible récent du catalogue. |
-| vcpkg `builtin-baseline` | `c76c06644034521fb761a39f8f52d8e87d1103d5` | absent | sélectionnée | SHA exact à inscrire dans `vcpkg.json`, sans suivi flottant de `master`. |
-| Triplet Windows | `x64-windows` | absent | sélectionnée | Baseline dynamique native ; tout autre triplet doit être justifié par un besoin de packaging ou d'ABI. |
+| CMake | 4.3.4 | 4.3.4 dans `.tools`, 4.2.1 dans le `PATH` global | sélectionnée | Le wrapper du dépôt utilise la ligne 4.3 exacte et neutralise le binaire global plus ancien. |
+| vcpkg | tag `2026.07.29` | installé dans `.tools` | sélectionnée | Snapshot reproductible récent du catalogue. |
+| vcpkg `builtin-baseline` | `9e593bb18ea69cc5095e012465dcd675a822ed0d` | installé dans `.tools` | sélectionnée | Commit pointé par le tag annoté `2026.07.29`, à inscrire dans `vcpkg.json` sans suivi flottant de `master`. |
+| Triplet Windows | `x64-windows` | configuré et compilé | sélectionnée | Baseline dynamique native ; tout autre triplet doit être justifié par un besoin de packaging ou d'ABI. |
 
 La version Visual Studio est figée à partir de l'[historique officiel Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-history). Visual Studio 2026 n'est pas retenu pour la fondation : le [Kit App Template officiel](https://github.com/NVIDIA-Omniverse/kit-app-template) annonce encore Visual Studio 2019 ou 2022 pour ses extensions C++ Windows. Le SDK 10.0.26100.0 reste dans une ligne prise en charge selon la [documentation Windows SDK](https://learn.microsoft.com/en-us/windows/apps/windows-sdk/). CMake 4.3.4 provient des [téléchargements officiels CMake](https://cmake.org/download/) et vcpkg du [registre de releases Microsoft](https://github.com/microsoft/vcpkg/releases).
 
-Le moteur utilisera `CMAKE_CXX_STANDARD=20`, `CMAKE_CXX_STANDARD_REQUIRED=ON` et `CMAKE_CXX_EXTENSIONS=OFF`. Les dépendances vcpkg seront déclarées uniquement dans le mode manifeste ; aucun `vcpkg install` global ne constituera une preuve de reproductibilité. Le build de l'application Kit continuera d'utiliser `repo.bat` et les outils gérés par le Kit App Template lorsque NVIDIA l'exige.
+Le moteur utilisera `CMAKE_CXX_STANDARD=20`, `CMAKE_CXX_STANDARD_REQUIRED=ON` et `CMAKE_CXX_EXTENSIONS=OFF`. CMake est téléchargé depuis l'archive officielle, vérifié par SHA-256 et exécuté depuis `.tools` par le wrapper du dépôt afin qu'une version présente plus tôt dans le `PATH` ne change pas le build. Les dépendances vcpkg seront déclarées uniquement dans le mode manifeste ; aucun `vcpkg install` global ne constituera une preuve de reproductibilité. Le build de l'application Kit continuera d'utiliser `repo.bat` et les outils gérés par le Kit App Template lorsque NVIDIA l'exige.
 
 Les premières dépendances C++ prévues dans le snapshot vcpkg sélectionné sont mp-units 2.5.0 pour les quantités, gRPC 1.81.1 et Protobuf 6.33.4 port-version 2 pour les contrats internes, et OpenTelemetry C++ 1.28.0 pour l'observabilité. Elles sont **candidates** jusqu'à la création du manifeste et à la compilation du squelette vertical ; elles ne doivent pas être ajoutées avant le composant qui les utilise réellement.
 
@@ -66,11 +66,11 @@ Les premières dépendances C++ prévues dans le snapshot vcpkg sélectionné so
 
 | Composant | Version cible | État local | Statut | Justification |
 |---|---:|---:|---|---|
-| Python CPython | 3.13.14 | 3.13.13 | sélectionnée | Ligne moderne et corrigée, plus prudente que 3.14 pour l'écosystème scientifique et les extensions natives. |
-| uv | 0.12.1 | 0.11.21 | sélectionnée | Gestionnaire unique des interpréteurs, environnements, workspace et verrou Python. |
-| FastAPI | 0.141.1 | absent | candidate | Passerelle HTTP du premier squelette vertical. |
-| Pydantic | 2.13.4 | absent | candidate | Validation des entrées de passerelle, sans devenir le modèle canonique interlangage. |
-| Uvicorn | 0.52.0 | absent | candidate | Serveur local de la passerelle FastAPI. |
+| Python CPython | 3.13.14 | 3.13.14 géré par uv | sélectionnée | Ligne moderne et corrigée, plus prudente que 3.14 pour l'écosystème scientifique et les extensions natives. |
+| uv | 0.12.1 | 0.12.1 | sélectionnée | Gestionnaire unique des interpréteurs, environnements, workspace et verrou Python. |
+| FastAPI | 0.141.1 | verrouillé et chargé | sélectionnée | Passerelle HTTP du premier squelette vertical. |
+| Pydantic | 2.13.4 | verrouillé et chargé | sélectionnée | Validation des entrées de passerelle, sans devenir le modèle canonique interlangage. |
+| Uvicorn | 0.52.0 | verrouillé | sélectionnée | Serveur local de la passerelle FastAPI. |
 | IfcOpenShell | 0.8.5 | absent | candidate | Ingestion IFC ; cette version publie des wheels Windows pour Python 3.13. |
 | NumPy | 2.5.1 | absent | candidate | Calcul et échanges tabulaires scientifiques. |
 | pandas | 3.0.5 | absent | candidate | Traitement de données hors boucle autoritaire. |
@@ -91,12 +91,12 @@ Le workspace ne publiera pas plusieurs fichiers de dépendances concurrents. `py
 | Composant | Version cible | État local | Statut | Justification |
 |---|---:|---:|---|---|
 | Node.js | 24.18.0 LTS | 24.18.0 | sélectionnée | Ligne LTS actuelle ; Node 26 Current n'est pas retenu pour la fondation. |
-| pnpm | 11.4.0 | 10.12.1 | sélectionnée | Gestionnaire du workspace, verrouillé par Corepack et `packageManager`. |
+| pnpm | 11.4.0 | 11.4.0 par Corepack | sélectionnée | Gestionnaire du workspace, verrouillé par Corepack et `packageManager`. |
 | npm | fourni avec Node, non utilisé pour résoudre le workspace | 11.16.0 | observée | npm reste disponible mais ne doit pas produire un second lockfile. |
-| React / React DOM | 19.2.8 | absent | candidate | Base du cockpit et du site public. |
-| TypeScript | 7.0.2 | absent | candidate | Version greenfield actuelle, soumise au smoke Vite et aux types React avant sélection finale. |
-| Vite | 8.2.0 | absent | candidate | Développement et build des applications React. |
-| `@vitejs/plugin-react` | 6.0.5 | absent | candidate | Intégration React avec la ligne Vite retenue. |
+| React / React DOM | 19.2.8 | verrouillé et compilé | sélectionnée | Base du cockpit et du site public. |
+| TypeScript | 7.0.2 | verrouillé et compilé | sélectionnée | Version greenfield validée par le build strict du premier cockpit. |
+| Vite | 8.2.0 | verrouillé et compilé | sélectionnée | Développement et build des applications React. |
+| `@vitejs/plugin-react` | 6.0.5 | verrouillé et compilé | sélectionnée | Intégration React avec la ligne Vite retenue. |
 | Tailwind CSS | 4.3.3 | absent | candidate | Design system utilitaire du projet. |
 | TanStack Query | 5.101.4 | absent | candidate | État serveur et cache du cockpit. |
 | Apache ECharts | 6.1.0 | absent | candidate | Courbes, timelines et cartes de chaleur. |
@@ -114,10 +114,10 @@ Le fichier racine `package.json` devra déclarer exactement `pnpm@11.4.0` dans `
 
 | Composant | Version cible | État local | Statut | Justification |
 |---|---:|---:|---|---|
-| Buf CLI | 1.72.0 | absent | sélectionnée | Formatage, lint, génération et détection des ruptures Protobuf. |
-| dbmate | 2.34.1 | absent | sélectionnée | Migrations SQL explicites et indépendantes d'un ORM. |
-| PostgreSQL | 18.4 | absent | sélectionnée | Version stable actuelle, supportée jusqu'en novembre 2030. |
-| TimescaleDB | 2.27.1 Apache-only | absent | sélectionnée | Version compatible PostgreSQL 18, verrouillée par l'ADR 0001 sur l'image officielle `-oss`. |
+| Buf CLI | 1.72.0 | 1.72.0 | sélectionnée | Formatage, lint, génération et détection des ruptures Protobuf. |
+| dbmate | 2.34.1 | 2.34.1 | sélectionnée | Migrations SQL explicites et indépendantes d'un ORM. |
+| PostgreSQL | 18.4 | image locale validée | sélectionnée | Version stable actuelle, supportée jusqu'en novembre 2030. |
+| TimescaleDB | 2.27.1 Apache-only | extension et hypertable validées | sélectionnée | Version compatible PostgreSQL 18, verrouillée par l'ADR 0001 sur l'image officielle `-oss`. |
 | OpenTelemetry C++ | 1.28.0 | absent | candidate | Traces et métriques réelles du moteur. |
 | OpenTelemetry Python | 1.44.0 | absent | candidate | Corrélation des services Python. |
 
@@ -164,4 +164,4 @@ Une version candidate devient sélectionnée uniquement lorsque le composant ré
 
 Les versions sont revues au début de la tranche qui les introduit, avant une livraison démontrée et lorsqu'un avis de sécurité pertinent apparaît. La revue commence par les sources officielles et compare les changements depuis la baseline. Une seule famille de dépendances est relevée à la fois lorsque cela permet d'isoler les régressions. Les migrations majeures de Kit, OpenUSD, CMake, C++, Python, Node, PostgreSQL, TimescaleDB ou d'un solveur exigent un ADR si elles changent un contrat, une autorité, une licence, un format persistant ou une hypothèse de déploiement.
 
-L'état initial montre que CMake, Python, uv et pnpm doivent être alignés, que MSVC v143, Buf et dbmate manquent, et que Kit 110.2 n'est pas encore scaffoldé dans ce monorepo. Ces écarts sont attendus : la baseline précède volontairement l'installation. Aucun agent ne doit prétendre que la fondation est reproductible avant que les manifests, scripts de contrôle et smoke tests correspondants n'existent.
+La fondation C++, Python, Web, contrats et données possède désormais ses manifests, verrous et premières preuves. L'écart système restant est le niveau de maintenance de Visual Studio Build Tools 2022, installé en 17.14.31 alors que 17.14.37 reste ciblé ; le toolset v143 sélectionné compile néanmoins le socle avec le Windows SDK exact. Kit 110.2 n'est pas encore scaffoldé dans ce monorepo et reste la prochaine grande matrice de compatibilité à valider.
