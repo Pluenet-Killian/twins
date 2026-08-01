@@ -1,6 +1,6 @@
 # Data Center Digital Twin
 
-> Statut : fondation du projet — la spécification est actée, l'implémentation n'a pas encore commencé.
+> Statut : fondation en cours — les premiers socles C++, Python, React, Protobuf et PostgreSQL/TimescaleDB sont reproductibles.
 
 Ce dépôt construit un jumeau numérique multiphysique professionnel d'un data center fictif français orienté AI/HPC. Le produit associera une scène 3D OpenUSD très détaillée, des solveurs spécialisés, une orchestration temporelle, un cockpit d'exploitation et une expérience Web publique légère.
 
@@ -87,7 +87,54 @@ La feuille de route détaillée et les critères d'acceptation se trouvent dans 
 
 ## Démarrage du développement
 
-Le bootstrap technique n'est pas encore créé. La baseline documente déjà les versions sélectionnées, candidates, observées et bloquées, mais elle ne prétend pas que ces outils sont installés ou intégrés. Il n'existe donc volontairement aucune commande de build prétendument fonctionnelle dans ce README. La première modification d'implémentation devra matérialiser ces décisions dans des manifests et verrous reproductibles, fournir une commande de contrôle et produire un premier run minimal traçable.
+La première exécution prépare CMake et vcpkg dans `.tools`, puis contrôle les versions sélectionnées. Le contrôle signale actuellement l'écart documenté entre Visual Studio Build Tools 17.14.31 installé et la cible de maintenance 17.14.37 ; le toolset MSVC v143 installé compile néanmoins le socle.
+
+```powershell
+.\tools\bootstrap-cmake.ps1
+.\tools\bootstrap-vcpkg.ps1
+.\tools\check-toolchain.ps1
+```
+
+Le moteur C++20 se configure et se compile avec le CMake exact du dépôt :
+
+```powershell
+.\tools\cmake.ps1 --preset windows-msvc-debug
+.\tools\cmake.ps1 --build --preset windows-msvc-debug
+.\build\windows-msvc-debug\services\orchestrator\Debug\twins-orchestrator.exe
+```
+
+Le service Python utilise exclusivement l'interpréteur et le verrou uv du workspace :
+
+```powershell
+uv sync --frozen
+$env:PYTHONPATH = (Resolve-Path "services\api\src").Path
+uv run --frozen uvicorn twins_api.main:app --app-dir services/api/src
+```
+
+Le cockpit React utilise pnpm par Corepack afin d'exécuter exactement la version inscrite dans `packageManager` :
+
+```powershell
+corepack pnpm install --frozen-lockfile
+corepack pnpm build
+corepack pnpm dev:cockpit
+```
+
+La base locale demande un secret non committé. Copier `.env.example` vers `.env`, remplacer le mot de passe d'exemple, puis démarrer et migrer depuis la racine :
+
+```powershell
+.\tools\database.ps1 -Command Up
+$env:DATABASE_URL = "postgres://twins:YOUR_LOCAL_PASSWORD@127.0.0.1:5432/twins?sslmode=disable"
+.\tools\database.ps1 -Command Migrate
+.\tools\database.ps1 -Command Status
+.\tools\database.ps1 -Command Stop
+```
+
+Les contrats se contrôlent sans génération implicite :
+
+```powershell
+buf format --diff --exit-code
+buf lint
+```
 
 Avant de contribuer, lire la spécification et `AGENTS.md`, vérifier l'état Git, identifier la source de vérité affectée et définir la vérification qui prouvera le changement. Les tests unitaires sont exclus par défaut et ne sont réalisés que sur demande explicite du propriétaire. Une capacité n'est terminée que lorsque son code, ses vérifications autorisées, ses migrations, sa documentation, ses performances et ses limites sont cohérents.
 
