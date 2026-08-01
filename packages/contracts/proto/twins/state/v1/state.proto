@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package twins.state.v1;
+
+// Streams calculated asset state for one immutable simulation run.
+service AssetStateService {
+  rpc WatchAssetStates(WatchAssetStatesRequest) returns (stream WatchAssetStatesResponse);
+}
+
+message WatchAssetStatesRequest {
+  // Canonical UUID of the immutable run to watch.
+  string run_id = 1;
+
+  // Empty means every asset. Non-empty lists are an explicit server-side filter.
+  repeated string asset_ids = 2;
+
+  // Resume strictly after this run-scoped sequence number. Zero starts at the beginning.
+  uint64 after_sequence = 3;
+}
+
+enum StateOrigin {
+  STATE_ORIGIN_UNSPECIFIED = 0;
+  STATE_ORIGIN_SYNTHETIC_FIXTURE = 1;
+  STATE_ORIGIN_SIMULATION_ENGINE = 2;
+}
+
+message AssetOperationalState {
+  enum Mode {
+    MODE_UNSPECIFIED = 0;
+    MODE_OFF = 1;
+    MODE_STARTING = 2;
+    MODE_RUNNING = 3;
+    MODE_STOPPING = 4;
+    MODE_FAULTED = 5;
+  }
+
+  Mode mode = 1;
+}
+
+message WatchAssetStatesResponse {
+  string run_id = 1;
+  uint64 sequence = 2;
+
+  // Exact elapsed virtual time since the run epoch; never wall-clock time.
+  int64 simulation_time_ns = 3;
+
+  string asset_id = 4;
+  StateOrigin origin = 5;
+
+  // New domain state families are added here without changing transport semantics.
+  oneof payload {
+    AssetOperationalState operational = 10;
+  }
+}

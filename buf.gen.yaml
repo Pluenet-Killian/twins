@@ -1,0 +1,9 @@
+version: v2
+clean: false
+plugins:
+  - remote: buf.build/protocolbuffers/python:v32.1
+    out: apps/kit/source/extensions/twins.state.client
+  - remote: buf.build/grpc/python:v1.81.0
+    out: apps/kit/source/extensions/twins.state.client
+inputs:
+  - directory: packages/contracts/proto

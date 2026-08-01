@@ -18,6 +18,7 @@
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/.tools/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
+        "VCPKG_INSTALL_OPTIONS": "--x-buildtrees-root=${sourceDir}/.tools/vcpkg-b",
         "VCPKG_TARGET_TRIPLET": "x64-windows-static-md-v143"
       }
     },
