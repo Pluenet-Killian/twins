@@ -87,7 +87,7 @@ La feuille de route détaillée et les critères d'acceptation se trouvent dans 
 
 ## Démarrage du développement
 
-La première exécution prépare CMake et vcpkg dans `.tools`, puis contrôle les versions sélectionnées. Le contrôle signale actuellement l'écart documenté entre Visual Studio Build Tools 17.14.31 installé et la cible de maintenance 17.14.37 ; le toolset MSVC v143 installé compile néanmoins le socle.
+La première exécution prépare CMake et vcpkg dans `.tools`, puis contrôle les versions sélectionnées. Le contrôle exige les versions exactes de la baseline et passe actuellement sur le poste de référence, notamment avec Visual Studio Build Tools 2022 17.14.37, MSVC v143 et Windows SDK 10.0.26100.0.
 
 ```powershell
 .\tools\bootstrap-cmake.ps1

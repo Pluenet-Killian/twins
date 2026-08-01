@@ -48,7 +48,7 @@ La page NVIDIA des [exigences techniques Omniverse](https://docs.omniverse.nvidi
 | Composant | Version cible | État local | Statut | Justification |
 |---|---:|---:|---|---|
 | Standard C++ | C++20, extensions désactivées | compilé | sélectionnée | Baseline du moteur, suffisamment moderne et compatible avec les dépendances prévues. |
-| Visual Studio Build Tools | 2022 17.14.37, build 17.14.37516.0 | 17.14.31, build 17.14.37216.2 | alignement restant | La ligne 17.14 compile le socle ; le correctif de maintenance 17.14.37 reste la cible. |
+| Visual Studio Build Tools | 2022 17.14.37, build 17.14.37516.0 | 17.14.37, build 17.14.37516.0 | sélectionnée | Version 2022 maintenue et explicitement compatible avec le C++ du Kit App Template. |
 | Toolset MSVC | v143 | 14.44.35207, compilateur 19.44.35226 | sélectionnée | Toolset associé à Visual Studio 2022 ; ABI et intégration Kit connues. |
 | Windows SDK | 10.0.26100.0 | installé | sélectionnée | SDK Windows 11 stable, maintenu et déjà présent ; la ligne 28000 plus récente n'apporte aucun besoin projet actuel. |
 | CMake | 4.3.4 | 4.3.4 dans `.tools`, 4.2.1 dans le `PATH` global | sélectionnée | Le wrapper du dépôt utilise la ligne 4.3 exacte et neutralise le binaire global plus ancien. |
@@ -164,4 +164,4 @@ Une version candidate devient sélectionnée uniquement lorsque le composant ré
 
 Les versions sont revues au début de la tranche qui les introduit, avant une livraison démontrée et lorsqu'un avis de sécurité pertinent apparaît. La revue commence par les sources officielles et compare les changements depuis la baseline. Une seule famille de dépendances est relevée à la fois lorsque cela permet d'isoler les régressions. Les migrations majeures de Kit, OpenUSD, CMake, C++, Python, Node, PostgreSQL, TimescaleDB ou d'un solveur exigent un ADR si elles changent un contrat, une autorité, une licence, un format persistant ou une hypothèse de déploiement.
 
-La fondation C++, Python, Web, contrats et données possède désormais ses manifests, verrous et premières preuves. L'écart système restant est le niveau de maintenance de Visual Studio Build Tools 2022, installé en 17.14.31 alors que 17.14.37 reste ciblé ; le toolset v143 sélectionné compile néanmoins le socle avec le Windows SDK exact. Kit 110.2 n'est pas encore scaffoldé dans ce monorepo et reste la prochaine grande matrice de compatibilité à valider.
+La fondation C++, Python, Web, contrats et données possède désormais ses manifests, verrous et premières preuves. Toutes les versions sélectionnées du socle local passent le contrôle exact de toolchain et le moteur compile avec MSVC v143 et le Windows SDK retenu. Kit 110.2 n'est pas encore scaffoldé dans ce monorepo et reste la prochaine grande matrice de compatibilité à valider.
