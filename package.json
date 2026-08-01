@@ -1,0 +1,13 @@
+{
+  "name": "twins-workspace",
+  "private": true,
+  "packageManager": "pnpm@11.4.0",
+  "engines": {
+    "node": "24.18.0",
+    "pnpm": "11.4.0"
+  },
+  "scripts": {
+    "build": "pnpm --recursive build",
+    "dev:cockpit": "pnpm --filter @twins/engineering-cockpit dev"
+  }
+}
