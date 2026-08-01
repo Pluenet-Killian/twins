@@ -103,6 +103,16 @@ Le moteur C++20 se configure et se compile avec le CMake exact du dépôt :
 .\build\windows-msvc-debug\services\orchestrator\Debug\twins-orchestrator.exe
 ```
 
+Le premier flux moteur–visualisation est une fixture de transport explicitement synthétique. Il publie pour la baie de référence les états `OFF`, `STARTING` et `RUNNING` aux temps virtuels 0, 2 et 5 secondes. Le serveur reste un processus séparé de Kit et se gère avec le wrapper dédié :
+
+```powershell
+.\tools\state-stream.ps1 -Command Start
+.\tools\state-stream.ps1 -Command Status
+.\tools\state-stream.ps1 -Command Stop
+```
+
+Le flux gRPC est lié au loopback par défaut. Chaque message contient le run immuable, une séquence reprenable, le temps virtuel entier en nanosecondes, l'UUID canonique de l'actif, son origine et une charge utile d'état versionnée. Cette fixture valide l'architecture et ne constitue pas encore un calcul électrique ou thermique.
+
 Le service Python utilise exclusivement l'interpréteur et le verrou uv du workspace :
 
 ```powershell
@@ -128,7 +138,7 @@ L'application d'ingénierie Omniverse utilise le Kit App Template officiel verro
 .\tools\kit.ps1 -Command Launch
 ```
 
-Le lancement ouvre par défaut `assets/usd/reference-rack.usda` dans l'application locale `Twins Engineering`. Le SDK, les extensions, caches et sorties de build restent dans `.tools` et ne sont jamais ajoutés à Git.
+Le lancement ouvre par défaut `assets/usd/reference-rack.usda` dans l'application locale `Twins Engineering`. Si le state stream est actif, l'extension Kit consomme le flux dans un thread non bloquant, le remet au thread principal par une file bornée et applique les couleurs ainsi que les métadonnées d'état uniquement dans la session layer OpenUSD. Le fichier USDA source n'est jamais modifié. Les roues Python gRPC nécessaires à Kit sont téléchargées au bootstrap, vérifiées par SHA-256, incluses dans le build et installées avec `--no-index`. Le SDK, les extensions, roues, caches et sorties de build restent dans les emplacements ignorés et ne sont jamais ajoutés à Git.
 
 La base locale demande un secret non committé. Copier `.env.example` vers `.env`, remplacer le mot de passe d'exemple, puis démarrer et migrer depuis la racine :
 
@@ -145,7 +155,10 @@ Les contrats se contrôlent sans génération implicite :
 ```powershell
 buf format --diff --exit-code
 buf lint
+buf generate
 ```
+
+`buf generate` ne s'exécute que lorsqu'un schéma change. Les plugins distants sont verrouillés dans `buf.gen.yaml`, les stubs Python générés sont versionnés pour Kit et ne doivent jamais être modifiés manuellement. Le C++ est généré par CMake avec les exécutables `protoc` et `grpc_cpp_plugin` du baseline vcpkg, jamais avec un binaire arbitraire trouvé dans le `PATH`.
 
 Avant de contribuer, lire la spécification et `AGENTS.md`, vérifier l'état Git, identifier la source de vérité affectée et définir la vérification qui prouvera le changement. Les tests unitaires sont exclus par défaut et ne sont réalisés que sur demande explicite du propriétaire. Une capacité n'est terminée que lorsque son code, ses vérifications autorisées, ses migrations, sa documentation, ses performances et ses limites sont cohérents.
 
