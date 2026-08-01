@@ -1,0 +1,14 @@
+[project]
+name = "twins-workspace"
+version = "0.0.0"
+description = "Multiphysics data center digital twin workspace"
+requires-python = "==3.13.14"
+dependencies = [
+    "fastapi==0.141.1",
+    "pydantic==2.13.4",
+    "uvicorn==0.52.0",
+]
+
+[tool.uv]
+package = false
+required-version = "==0.12.1"
