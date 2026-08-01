@@ -88,6 +88,7 @@ timescale-data/
 minio-data/
 
 # Temporary files
+.tools/
 tmp/
 temp/
 *.tmp
