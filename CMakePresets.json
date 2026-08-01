@@ -17,7 +17,8 @@
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/.tools/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows"
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md-v143"
       }
     },
     {

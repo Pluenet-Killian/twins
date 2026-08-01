@@ -10,4 +10,7 @@ message AssetIdentity {
 
   // canonical_name is a human-readable name and never replaces asset_id.
   string canonical_name = 2;
+
+  // asset_type_uri identifies the versioned semantic type of the asset.
+  string asset_type_uri = 3;
 }
