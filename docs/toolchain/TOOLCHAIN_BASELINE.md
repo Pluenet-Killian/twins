@@ -117,11 +117,11 @@ Le fichier racine `package.json` devra déclarer exactement `pnpm@11.4.0` dans `
 | Buf CLI | 1.72.0 | absent | sélectionnée | Formatage, lint, génération et détection des ruptures Protobuf. |
 | dbmate | 2.34.1 | absent | sélectionnée | Migrations SQL explicites et indépendantes d'un ORM. |
 | PostgreSQL | 18.4 | absent | sélectionnée | Version stable actuelle, supportée jusqu'en novembre 2030. |
-| TimescaleDB | 2.27.1 | absent | sélectionnée techniquement, édition bloquée | Version compatible PostgreSQL 18 ; le choix Apache 2 ou Community précède le choix d'image. |
+| TimescaleDB | 2.27.1 Apache-only | absent | sélectionnée | Version compatible PostgreSQL 18, verrouillée par l'ADR 0001 sur l'image officielle `-oss`. |
 | OpenTelemetry C++ | 1.28.0 | absent | candidate | Traces et métriques réelles du moteur. |
 | OpenTelemetry Python | 1.44.0 | absent | candidate | Corrélation des services Python. |
 
-Les sources de référence sont les [releases Buf](https://github.com/bufbuild/buf/releases), les [releases dbmate](https://github.com/amacneil/dbmate/releases), la [politique de versions PostgreSQL](https://www.postgresql.org/support/versioning/), les [notes PostgreSQL 18.4](https://www.postgresql.org/docs/release/18.4/) et les [releases TimescaleDB](https://github.com/timescale/timescaledb/releases). L'[édition et la licence TimescaleDB](https://docs.timescale.com/about/latest/timescaledb-editions/) restent une décision bloquante : aucune image de conteneur n'est figée avant l'ADR correspondant.
+Les sources de référence sont les [releases Buf](https://github.com/bufbuild/buf/releases), les [releases dbmate](https://github.com/amacneil/dbmate/releases), la [politique de versions PostgreSQL](https://www.postgresql.org/support/versioning/), les [notes PostgreSQL 18.4](https://www.postgresql.org/docs/release/18.4/) et les [releases TimescaleDB](https://github.com/timescale/timescaledb/releases). L'ADR 0001 retient l'édition Apache-only et interdit d'introduire silencieusement une fonction soumise à la Timescale License.
 
 La génération Protobuf suivra une seule configuration `buf.yaml` et `buf.gen.yaml` verrouillant les plugins de génération. Les versions des runtimes C++ et Python peuvent différer, mais les combinaisons générateur–runtime doivent être compatibles et vérifiées par un échange C++–Python réel. Aucun agent ne doit appeler un `protoc` trouvé arbitrairement dans le `PATH`.
 

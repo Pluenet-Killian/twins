@@ -733,7 +733,7 @@ Une architecture de messages distribuée telle que Kafka ne sera pas introduite 
 
 DuckDB ne fait pas partie de l'architecture cible.
 
-L'édition TimescaleDB sera décidée avant le bootstrap de la base. L'édition Apache 2 sera privilégiée si elle couvre les fonctions requises et préserve une future offre hébergée. Toute utilisation de la Community Edition sous Timescale License devra documenter ses restrictions, notamment l'interdiction de la proposer comme service, et faire l'objet d'une revue juridique avant commercialisation. Les migrations ne seront pas exécutées implicitement au démarrage d'un service de production ; elles seront planifiées, sauvegardées et vérifiées sur une restauration représentative, y compris pour les hypertables, politiques et agrégats continus.
+L'ADR 0001 retient l'édition Apache-only de TimescaleDB afin de préserver une future offre hébergée sans introduire de code sous Timescale License. Toute évolution vers une autre édition devra documenter les fonctions nécessaires, les restrictions applicables et faire l'objet d'une nouvelle décision et d'une revue juridique avant commercialisation. Les migrations ne seront pas exécutées implicitement au démarrage d'un service de production ; elles seront planifiées, sauvegardées et vérifiées sur une restauration représentative, y compris pour les hypertables, politiques et agrégats continus.
 
 Le manifeste d'artefact conservera au minimum l'empreinte SHA-256, la taille, le type de média, la provenance, la licence, les dépendances, le statut de validation et l'emplacement. MinIO ne sera pas la dépendance locale par défaut en raison de l'archivage de son dépôt communautaire et de sa licence AGPLv3 ; la portabilité visera les propriétés nécessaires et l'API S3, pas un fournisseur précis. Parquet sera utilisé pour les exports tabulaires et séries archivées, Zarr v3 pour les tableaux multidimensionnels découpés, VTKHDF ou VTK XML pour les champs et maillages de visualisation, et les formats natifs des solveurs resteront les sources de calcul. NPZ pourra servir de cache temporaire mais pas de format autoritaire de long terme.
 
@@ -1028,7 +1028,7 @@ Le backlog ne doit pas ouvrir simultanément plusieurs squelettes sans intégrat
 - Le master temporel sera choisi par ADR après comparaison HELICS, OMSimulator/SSP et boucle C++ minimale ; le C++ conserve scénarios, runs, audit et politiques.
 - Les solveurs spécialisés restent les sources de vérité de leur domaine et l'orchestrateur ne réimplémente pas leurs lois physiques.
 - PostgreSQL et TimescaleDB sont utilisés dès le début ; PostgreSQL porte le registre canonique, TimescaleDB les séries temporelles et dbmate les migrations SQL partagées.
-- L'édition et la licence TimescaleDB sont décidées avant bootstrap ; une restriction de service de la Community Edition ne sera jamais ignorée dans une offre hébergée.
+- L'édition Apache-only de TimescaleDB est retenue par l'ADR 0001 ; une autre édition exige une nouvelle décision et aucune restriction de service ne sera ignorée dans une offre hébergée.
 - Les fichiers lourds sont adressés par contenu dans un stockage local abstrait puis compatible S3 ; MinIO n'est pas une dépendance par défaut et Git porte le code, contrats et sources textuelles.
 - Parquet porte les exports tabulaires, Zarr v3 les tableaux multidimensionnels, VTK les champs de visualisation, OpenUSD la scène, glTF le Web, FMI les composants et SSP leurs assemblages.
 - ASHRAE 223P constitue la cible sémantique versionnée et Brick la complète ; IFC 4.3, IDS, bSDD, IfcOpenShell et IfcTester portent l'échange et le contrôle BIM.
@@ -1062,7 +1062,7 @@ Les décisions d'architecture nécessaires à l'initialisation sont actées. Les
 - les modèles précis de serveurs ou équipements représentatifs, leurs courbes de puissance et leurs licences de représentation ;
 - les distributions de panne et de temps humain, qui devront être sourcées ou explicitement marquées synthétiques ;
 - les tolérances numériques et physiques propres à chaque dossier de crédibilité ;
-- l'édition TimescaleDB retenue et la liste exacte de fonctions nécessaires, décidées avant le bootstrap de la base ;
+- la liste exacte des fonctions TimescaleDB Apache-only nécessaires et leur comportement mesuré sur les volumes de référence ;
 - le résultat du prototype HELICS–OMSimulator/SSP–boucle C++ et le master temporel retenu par ADR ;
 - la promotion après smoke test des versions candidates de Kit, de ses extensions, du pilote NVIDIA, de Modelica Buildings, d'OpenModelica, d'OpenDSS et d'OpenFOAM inscrites dans la baseline de toolchain ;
 - les profils FMI réellement acceptés par chaque couple exporteur–importeur et les validateurs employés ;
