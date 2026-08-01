@@ -8,6 +8,7 @@
 #include <google/protobuf/util/json_util.h>
 
 #include "assets.hpp"
+#include "state_fixture.hpp"
 
 namespace {
 
@@ -47,8 +48,28 @@ int main(const int argument_count, const char* const arguments[])
         return 0;
     }
 
+    if (std::string{arguments[1]} == "--serve-state-fixture") {
+        if (argument_count > 3) {
+            std::cerr << "Usage: twins-orchestrator --serve-state-fixture [ADDRESS]\n";
+            return 2;
+        }
+
+        const std::string_view address = argument_count == 3
+            ? std::string_view{arguments[2]}
+            : std::string_view{"127.0.0.1:50051"};
+        try {
+            twins::orchestrator::run_state_fixture_server(address);
+        }
+        catch (const std::exception& error) {
+            std::cerr << "Unable to run state fixture: " << error.what() << '\n';
+            return 1;
+        }
+        return 0;
+    }
+
     if (argument_count != 3 || std::string{arguments[1]} != "--asset-id") {
-        std::cerr << "Usage: twins-orchestrator [--asset-id UUID]\n";
+        std::cerr
+            << "Usage: twins-orchestrator [--asset-id UUID | --serve-state-fixture [ADDRESS]]\n";
         return 2;
     }
 
