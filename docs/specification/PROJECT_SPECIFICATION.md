@@ -576,7 +576,9 @@ Le scénario transversal de référence injecte la perte du réseau public penda
 
 Chaque dossier précisera l'usage prévu, les décisions soutenues, les questions auxquelles le modèle peut répondre, celles auxquelles il ne peut pas répondre, le système réel ou de référence représenté, les hypothèses, les simplifications, le domaine de validité, les données utilisées, les incertitudes, les critères d'acceptation, les preuves disponibles et la personne ou le rôle ayant approuvé l'usage.
 
-La vérification établit que le logiciel et les équations ont été implémentés et intégrés correctement. Elle comprend les tests unitaires, tests de propriétés, analyses dimensionnelles, bilans, tests de convergence, tests de contrats, comparaisons analytiques, cas manufacturiers ou académiques de référence, tests de régression et vérification de la reproductibilité.
+La vérification établit que le logiciel et les équations ont été implémentés et intégrés correctement. Elle comprend selon le risque les compilations, analyses statiques, smoke tests, analyses dimensionnelles, bilans, tests de convergence, tests de contrats et d'intégration, scénarios reproductibles, comparaisons analytiques, cas manufacturiers ou académiques de référence et tests de régression de bout en bout.
+
+**Décision de méthode :** aucun test unitaire ne sera créé, complété ou exécuté par défaut, afin de préserver la vitesse de développement et d'éviter une infrastructure de tests isolés jugée peu utile au stade courant. Un test unitaire n'est autorisé que lorsque le propriétaire du projet le demande explicitement dans la requête concernée. Cette règle ne supprime pas l'obligation de vérifier les contrats, intégrations, scénarios, bilans physiques et affirmations de crédibilité par des moyens adaptés.
 
 La validation établit dans quelle mesure le modèle représente suffisamment le comportement attendu pour son usage. Elle s'appuie, selon disponibilité, sur des données mesurées, essais, courbes constructeur, résultats d'outils reconnus, campagnes CFD, retours d'experts et comparaisons croisées. Une validation dans un régime de fonctionnement ne vaut pas validation universelle.
 
@@ -649,7 +651,7 @@ Le site public devra proposer une solution de repli pour les appareils ou naviga
 - C++20 pour l'horloge virtuelle, les événements, les scénarios, les automates et l'orchestration ;
 - CMake pour le build ;
 - vcpkg en mode manifeste pour les dépendances C++ ;
-- GoogleTest pour les tests unitaires et d'intégration ;
+- aucun framework de test unitaire dans le socle initial ; GoogleTest ne pourra être ajouté que sur demande explicite du propriétaire ;
 - unités SI obligatoires dans les contrats physiques.
 
 ### 6.5 Adaptateurs et outils scientifiques
@@ -798,7 +800,7 @@ Le scénario de perte réseau doit traverser au minimum l'électricité, le refr
 
 ### 9.5 Robustesse logicielle
 
-Les tests unitaires, contrats, intégration, scénarios de référence et migrations passent dans l'intégration continue. Les entrées invalides, échecs de solveur, pertes de service, timeouts, messages dupliqués et reprises ne créent pas de résultat silencieusement corrompu. Les sauvegardes et restaurations des données essentielles sont vérifiées.
+Les contrôles de build, contrats, intégration, scénarios de référence et migrations passent dans l'intégration continue. Les tests unitaires en sont exclus sauf demande explicite du propriétaire. Les entrées invalides, échecs de solveur, pertes de service, timeouts, messages dupliqués et reprises ne créent pas de résultat silencieusement corrompu. Les sauvegardes et restaurations des données essentielles sont vérifiées.
 
 ### 9.6 Performance de l'application d'ingénierie
 
@@ -872,7 +874,7 @@ database/
 infra/
   compose/ observability/ deployment/
 tests/
-  unit/ contract/ integration/ scenarios/ performance/ security/
+  contract/ integration/ scenarios/ performance/ security/
 docs/
   specification/ architecture-decisions/ models/ procedures/ reports/
 tools/
@@ -955,6 +957,7 @@ Chaque incrément se termine par une démonstration reproductible depuis un envi
 - Les automatismes, BMS, EPMS, DCIM, dispositifs de sécurité et opérateurs sont exécutables, traçables et reliés aux modèles physiques.
 - Les scénarios injectent des causes et laissent les modèles calculer les conséquences ; les runs sont immuables, rejouables et comparables.
 - Chaque modèle et affirmation technique exige un dossier de crédibilité, un domaine de validité, des preuves et des limites explicites.
+- Les tests unitaires sont exclus par défaut et ne peuvent être créés ou exécutés que sur demande explicite du propriétaire ; les vérifications de build, contrat, intégration, scénario et crédibilité restent obligatoires selon le risque.
 - La plateforme sépare le site public, les services, la simulation, l'ingénierie et les futures connexions OT ; les connecteurs réels sont en lecture seule par défaut.
 - Le premier produit doit fonctionner sur la machine actuelle sans RTX Pro 6000 grâce aux payloads, niveaux de détail, modèles réduits et calculs lourds hors ligne.
 - Le data center sert de démonstrateur de compétences transférables et non de spécialisation commerciale exclusive.

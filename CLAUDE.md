@@ -20,6 +20,6 @@ Respecter les changements déjà présents dans le worktree. Éviter les réécr
 
 Le code et les identifiants sont en anglais ; les documents produit et l'explication au propriétaire sont en français. Les unités internes sont SI, les contrats sont versionnés et les runs sont immuables.
 
-Exécuter les tests adaptés, vérifier les bilans et les cas d'échec, puis mettre à jour la documentation ou l'ADR lorsque l'architecture change. Ne déclarer terminé, validé, sécurisé ou conforme que si les preuves correspondantes existent.
+Ne jamais écrire, compléter ou exécuter de tests unitaires sauf si le propriétaire les demande explicitement dans la requête en cours. Une demande générique de test ou de vérification ne suffit pas. Vérifier plutôt par compilation, smoke test, contrat, intégration, scénario ou comparaison de référence selon le risque, puis mettre à jour la documentation ou l'ADR lorsque l'architecture change. Ne déclarer terminé, validé, sécurisé ou conforme que si les preuves correspondantes existent.
 
 Toute réponse finale doit distinguer clairement les changements réalisés, les vérifications effectuées, les limites connues et la prochaine action utile. Ne pas masquer un échec de solveur, un test non exécuté ou une hypothèse derrière une formulation positive.

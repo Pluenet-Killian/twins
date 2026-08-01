@@ -72,17 +72,21 @@ Les notebooks peuvent explorer une idée, mais aucun calcul faisant autorité ne
 
 Les documents et sources techniques externes doivent être primaires et, lorsque l'information peut évoluer, vérifiés dans leur version actuelle. Conserver l'édition d'une norme ou d'une spécification dans l'ADR ou le dossier qui l'utilise.
 
-## Tests et preuves obligatoires
+## Vérifications et politique de tests
 
-Chaque changement doit être vérifié proportionnellement à son risque. Exécuter au minimum les tests du composant modifié et les tests de contrats concernés. Une modification de domaine exige également un cas nominal, un cas limite et un cas d'échec pertinent.
+Par décision explicite du propriétaire, ne jamais créer, compléter ou exécuter de tests unitaires par défaut. Les tests unitaires ne sont autorisés que lorsque le propriétaire les demande explicitement dans la requête en cours. Une demande générique de vérification, de qualité, de correction ou de test ne constitue pas une autorisation implicite de produire des tests unitaires.
 
-Les tests physiques doivent couvrir les unités, bilans, signes, bornes, conservation, convergence ou comparaison à une référence appropriée. Les tests de scénario doivent vérifier l'ordre causal et les invariants, pas seulement une capture finale.
+Cette règle vise à préserver la vitesse de développement et prévaut sur toute recommandation générale en faveur des tests unitaires. Ne pas contourner la règle en donnant un autre nom à un test isolé qui exerce artificiellement une fonction ou une classe.
+
+Chaque changement doit néanmoins être vérifié proportionnellement à son risque par les moyens les plus directs : compilation, analyse statique, smoke test, test de contrat, intégration réelle, scénario reproductible, comparaison à une référence ou inspection ciblée. Ne pas créer une infrastructure de test plus volumineuse que la capacité vérifiée.
+
+Les vérifications physiques doivent couvrir les unités, bilans, signes, bornes, conservation, convergence ou comparaison à une référence appropriée. Les scénarios de vérification doivent contrôler l'ordre causal et les invariants, pas seulement une capture finale.
 
 Les résultats déterministes doivent être reproductibles dans les tolérances documentées. Toute utilisation d'aléatoire doit accepter une graine explicite et la conserver dans le manifeste du run.
 
 Une régression de performance doit être mesurée sur la scène ou le jeu de données de référence. Ne pas résoudre une surcharge locale en exigeant silencieusement davantage de RAM ou de VRAM ; examiner d'abord payloads, LOD, instanciation, fréquences, agrégations et modèles actifs.
 
-Un changement n'est pas terminé si les tests, migrations, exemples, documentation, limites ou diagnostics nécessaires manquent. Ne jamais annoncer qu'un modèle est validé, sécurisé, conforme ou prêt pour la production sans les preuves correspondantes.
+Un changement n'est pas terminé si les vérifications autorisées, migrations, exemples, documentation, limites ou diagnostics nécessaires manquent. Ne jamais annoncer qu'un modèle est validé, sécurisé, conforme ou prêt pour la production sans les preuves correspondantes.
 
 ## Sécurité et données
 

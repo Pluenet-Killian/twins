@@ -64,7 +64,7 @@ assets/        sources, USD, dérivés Web et matériaux
 data/          données de référence, synthétiques et de validation
 database/      migrations, seeds et politiques
 infra/         environnement local, observabilité et déploiement
-tests/         tests unitaires, contrats, intégration et scénarios
+tests/         contrats, intégration, scénarios, performance et sécurité
 docs/          spécification, ADR, dossiers de modèles et rapports
 tools/         pipelines d'assets, publication et validation
 ```
@@ -87,7 +87,7 @@ La feuille de route détaillée et les critères d'acceptation se trouvent dans 
 
 Le bootstrap technique n'est pas encore créé. Il n'existe donc volontairement aucune commande de build prétendument fonctionnelle dans ce README. La première modification d'implémentation devra fournir un environnement reproductible, une commande de vérification et un premier run minimal traçable.
 
-Avant de contribuer, lire la spécification et `AGENTS.md`, vérifier l'état Git, identifier la source de vérité affectée et définir le test qui prouvera le changement. Une capacité n'est terminée que lorsque son code, ses tests, ses migrations, sa documentation, ses performances et ses limites sont cohérents.
+Avant de contribuer, lire la spécification et `AGENTS.md`, vérifier l'état Git, identifier la source de vérité affectée et définir la vérification qui prouvera le changement. Les tests unitaires sont exclus par défaut et ne sont réalisés que sur demande explicite du propriétaire. Une capacité n'est terminée que lorsque son code, ses vérifications autorisées, ses migrations, sa documentation, ses performances et ses limites sont cohérents.
 
 ## Relation avec NVIDIA DSX
 
