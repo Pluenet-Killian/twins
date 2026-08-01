@@ -6,7 +6,7 @@ Ce dépôt construit un jumeau numérique multiphysique professionnel d'un data 
 
 Le data center est un démonstrateur de profondeur technique. La finalité commerciale est plus large : montrer la capacité à numériser, connecter, superviser et simuler des équipements, bâtiments et installations complexes pour de futurs clients.
 
-La référence fonctionnelle et architecturale est la [spécification du projet](docs/specification/PROJECT_SPECIFICATION.md). Les instructions obligatoires pour les agents et contributeurs sont dans [AGENTS.md](AGENTS.md). Claude Code doit également lire [CLAUDE.md](CLAUDE.md).
+La référence fonctionnelle et architecturale est la [spécification du projet](docs/specification/PROJECT_SPECIFICATION.md). Les versions exactes, leurs statuts de validation et les règles destinées aux agents sont définis dans la [baseline de toolchain](docs/toolchain/TOOLCHAIN_BASELINE.md). Les instructions obligatoires pour les agents et contributeurs sont dans [AGENTS.md](AGENTS.md). Claude Code doit également lire [CLAUDE.md](CLAUDE.md).
 
 ## Ce que le produit doit prouver
 
@@ -22,8 +22,10 @@ flowchart LR
     Public["Site public React + glTF"] --> Published["Artefacts de runs publiés"]
     API <--> Engine["Orchestrateur C++20"]
     Kit["Omniverse Kit + OpenUSD"] <--> Engine
-    Engine <--> Electrical["OpenDSS — électricité"]
-    Engine <--> Thermal["Modelica/FMU — thermique et hydraulique"]
+    Engine <--> CoSim["Master temporel après prototype"]
+    CoSim <--> Electrical["OpenDSS — électricité RMS"]
+    CoSim <--> Thermal["Modelica/FMU + SSP — thermique et hydraulique"]
+    Electrical -. vérification .-> IEC["pandapower — IEC 60909"]
     Engine <--> CFD["OpenFOAM — CFD hors ligne"]
     Engine <--> Compute["Workloads, réseau et automatismes"]
     Engine <--> Data["PostgreSQL + TimescaleDB"]
@@ -32,7 +34,7 @@ flowchart LR
     Artifacts --> Published
 ```
 
-OpenUSD compose la scène et Omniverse Kit l'affiche avec le rendu RTX. Ils ne calculent pas la physique. Le moteur C++ possède l'horloge virtuelle et orchestre les domaines. OpenDSS calcule le réseau électrique RMS, Modelica les dynamiques thermohydrauliques et OpenFOAM les campagnes CFD détaillées. PostgreSQL conserve les identités et configurations canoniques, tandis que TimescaleDB conserve les séries temporelles.
+OpenUSD compose la scène et Omniverse Kit l'affiche avec le rendu RTX. Ils ne calculent pas la physique. Le moteur C++ porte les runs, scénarios, événements métier et l'audit. Le master temporel sera choisi après un prototype comparant HELICS, OMSimulator/SSP et une boucle C++ minimale. OpenDSS calcule le réseau électrique RMS, pandapower vérifie des cas IEC 60909 sélectionnés, Modelica les dynamiques thermohydrauliques et OpenFOAM les campagnes CFD détaillées. FMI 2.0.5 est la baseline de production, FMI 3.0.2 une cible promue après preuve et SSP 2.0.1 décrit les systèmes composés. PostgreSQL conserve les identités et configurations canoniques, tandis que TimescaleDB conserve les séries temporelles.
 
 Le site public ne lancera ni Kit ni les solveurs. Il chargera une scène glTF/GLB optimisée et rejouera des résultats pré-calculés, validés et expurgés. Les démonstrations haute fidélité utiliseront Kit desktop ou une session WebRTC temporaire.
 
@@ -79,13 +81,13 @@ Le scénario de référence injectera la perte du réseau public pendant une cha
 
 ## Ordre de construction
 
-La fondation commencera par les contrats, le registre canonique, PostgreSQL/TimescaleDB, un moteur C++ minimal, l'API, une application Kit vide et un cockpit React connecté. Viendront ensuite la tranche sémantique et 3D, l'électricité, le refroidissement hybride, l'informatique, les automatismes et humains, le scénario transversal, l'expérience d'ingénierie, puis la publication Web et l'extension du cycle de vie.
+La feuille de route commence par verrouiller les versions, licences, contrats, migrations et artefacts, puis construit immédiatement un trajet complet UUID–PostgreSQL–C++–Kit/React–GLB public. Elle enchaîne avec le pipeline IFC/IDS–USD–223P, la décision de co-simulation par prototype, les tranches électrique, thermohydraulique, informatique et automatismes/humains, le scénario transversal crédible, l'application d'ingénierie, la publication commerciale, puis le cycle de vie et les connecteurs réels. Chaque tranche possède une porte de sortie mesurable et aucune couche visuelle ne masque une intégration manquante.
 
 La feuille de route détaillée et les critères d'acceptation se trouvent dans la spécification. Aucun calendrier n'est annoncé avant l'estimation du backlog et la mesure des premiers prototypes.
 
 ## Démarrage du développement
 
-Le bootstrap technique n'est pas encore créé. Il n'existe donc volontairement aucune commande de build prétendument fonctionnelle dans ce README. La première modification d'implémentation devra fournir un environnement reproductible, une commande de vérification et un premier run minimal traçable.
+Le bootstrap technique n'est pas encore créé. La baseline documente déjà les versions sélectionnées, candidates, observées et bloquées, mais elle ne prétend pas que ces outils sont installés ou intégrés. Il n'existe donc volontairement aucune commande de build prétendument fonctionnelle dans ce README. La première modification d'implémentation devra matérialiser ces décisions dans des manifests et verrous reproductibles, fournir une commande de contrôle et produire un premier run minimal traçable.
 
 Avant de contribuer, lire la spécification et `AGENTS.md`, vérifier l'état Git, identifier la source de vérité affectée et définir la vérification qui prouvera le changement. Les tests unitaires sont exclus par défaut et ne sont réalisés que sur demande explicite du propriétaire. Une capacité n'est terminée que lorsque son code, ses vérifications autorisées, ses migrations, sa documentation, ses performances et ses limites sont cohérents.
 

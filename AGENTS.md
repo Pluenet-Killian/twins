@@ -11,10 +11,11 @@ Ce projet est un jumeau numérique multiphysique professionnel de data center. I
 Avant toute modification significative, lire dans cet ordre :
 
 1. `docs/specification/PROJECT_SPECIFICATION.md` pour l'intention, le périmètre et les décisions actées ;
-2. le présent fichier ;
-3. les ADR applicables dans `docs/architecture-decisions/` lorsqu'ils existent ;
-4. la fiche de crédibilité du modèle concerné lorsqu'elle existe ;
-5. le `AGENTS.md` le plus proche du fichier modifié lorsqu'il existe.
+2. `docs/toolchain/TOOLCHAIN_BASELINE.md` pour les versions, compatibilités et règles de mise à jour ;
+3. le présent fichier ;
+4. les ADR applicables dans `docs/architecture-decisions/` lorsqu'ils existent ;
+5. la fiche de crédibilité du modèle concerné lorsqu'elle existe ;
+6. le `AGENTS.md` le plus proche du fichier modifié lorsqu'il existe.
 
 Une décision marquée comme actée dans la spécification ne doit jamais être remplacée silencieusement. Si une meilleure solution apparaît, documenter le problème, les preuves, les conséquences et proposer un ADR avant d'effectuer une migration incompatible.
 
@@ -30,15 +31,15 @@ OpenUSD compose la scène d'ingénierie et ses références. Omniverse Kit rend 
 
 React fournit le cockpit d'ingénierie et le site public. Le site public utilise des artefacts glTF/GLB dérivés et rejoue des runs acceptés ; il ne lance ni Omniverse Kit ni un solveur autoritaire.
 
-Le moteur C++20 possède l'horloge virtuelle, la file d'événements, les états discrets, l'orchestration et la reproductibilité. Il ne doit pas réimplémenter une loi physique déjà placée sous l'autorité d'un solveur spécialisé.
+Le moteur C++20 possède le cycle de vie des runs, les scénarios, la file d'événements métier, les états discrets, l'audit et la reproductibilité. Le master temporel sera choisi par ADR après le prototype HELICS–OMSimulator/SSP–boucle C++ ; ce choix ne change pas l'autorité produit du moteur. Il ne doit pas réimplémenter une loi physique déjà placée sous l'autorité d'un solveur spécialisé.
 
-OpenDSS est la source du calcul électrique RMS. Modelica et les FMU portent la dynamique thermohydraulique et les régulations continues. OpenFOAM porte les campagnes CFD détaillées hors ligne. Les modèles réduits ne sont utilisables que dans un domaine de validité documenté.
+OpenDSS est la source du calcul électrique RMS pendant le run ; pandapower fournit une route indépendante pour les vérifications IEC 60909 sélectionnées. Modelica et les FMU portent la dynamique thermohydraulique et les régulations continues. OpenFOAM porte les campagnes CFD détaillées hors ligne sous WSL2 ou Linux. Les modèles réduits ne sont utilisables que dans un domaine de validité documenté, et PhysicsNeMo exige d'abord un corpus validé et une comparaison avec une solution plus simple.
 
-PostgreSQL porte le registre canonique, les identités, configurations et mappings. TimescaleDB porte les séries temporelles. Les fichiers lourds sont des artefacts référencés et non des blobs ajoutés arbitrairement aux tables ou à Git.
+PostgreSQL porte le registre canonique, les identités, configurations et mappings. TimescaleDB porte les séries temporelles et son édition/licence doit respecter le mode commercial retenu. dbmate applique les migrations SQL. Les fichiers lourds sont des artefacts adressés par contenu et référencés, non des blobs ajoutés arbitrairement aux tables ou à Git ; MinIO n'est pas une dépendance implicite.
 
-ASHRAE 223P et Brick fournissent une projection sémantique versionnée. IFC conserve son rôle BIM. Le graphe RDF, OpenUSD, TimescaleDB et les solveurs ne doivent pas dupliquer l'autorité de PostgreSQL sur les identités canoniques.
+ASHRAE 223P et Brick fournissent une projection sémantique versionnée. IFC 4.3 conserve son rôle BIM, IDS exprime les informations exigées et IfcTester les contrôle avant ingestion. Le graphe RDF, OpenUSD, TimescaleDB et les solveurs ne doivent pas dupliquer l'autorité de PostgreSQL sur les identités canoniques.
 
-Les contrats interprocessus utilisent Protocol Buffers et gRPC. Les nouveaux modèles dynamiques ciblent FMI 3.0.2 tout en préservant l'import FMI 2.0 lorsque nécessaire.
+Les contrats interprocessus utilisent Protocol Buffers et gRPC, avec Buf pour les ruptures de compatibilité. FMI 2.0.5 est la baseline de production ; FMI 3.0.2 est promu modèle par modèle après preuve. SSP 2.0.1 décrit les systèmes de co-simulation sans remplacer le registre canonique ni les scénarios.
 
 ## Règles de modélisation
 
@@ -72,6 +73,8 @@ Les notebooks peuvent explorer une idée, mais aucun calcul faisant autorité ne
 
 Les documents et sources techniques externes doivent être primaires et, lorsque l'information peut évoluer, vérifiés dans leur version actuelle. Conserver l'édition d'une norme ou d'une spécification dans l'ADR ou le dossier qui l'utilise.
 
+Avant de sélectionner une API, une syntaxe, une image ou une dépendance, consulter `docs/toolchain/TOOLCHAIN_BASELINE.md` et la documentation officielle correspondant à la version retenue. Ne jamais introduire `latest`, un second lockfile, une toolchain globale non déclarée ou une mise à niveau majeure silencieuse. Les manifests et verrous exécutables doivent rester cohérents avec la baseline ; toute divergence est corrigée explicitement dans le même changement et vérifiée par les moyens autorisés.
+
 ## Vérifications et politique de tests
 
 Par décision explicite du propriétaire, ne jamais créer, compléter ou exécuter de tests unitaires par défaut. Les tests unitaires ne sont autorisés que lorsque le propriétaire les demande explicitement dans la requête en cours. Une demande générique de vérification, de qualité, de correction ou de test ne constitue pas une autorisation implicite de produire des tests unitaires.
@@ -93,6 +96,8 @@ Un changement n'est pas terminé si les vérifications autorisées, migrations, 
 Le site public, les services, la simulation, l'ingénierie et toute future zone OT sont des zones de confiance distinctes. Aucun code public ne doit disposer d'un accès direct à des services d'ingénierie ou à un équipement réel.
 
 Les connecteurs vers une installation réelle sont en lecture seule par défaut. Toute commande réelle nécessite un projet, une analyse de risques, une autorisation et des interverrouillages dédiés. Les tests de simulation ne doivent jamais utiliser les adresses ou identifiants d'un site de production.
+
+BACnet/SC est la cible des nouvelles intégrations BMS. BACnet/IP reste derrière une passerelle segmentée pour l'existant ; OPC UA couvre les équipements industriels et MQTT doit utiliser Sparkplug lorsqu'un cycle de vie edge est requis. Aucun de ces connecteurs n'entre dans le premier noyau sans cas réel et frontière d'autorité.
 
 Ne jamais ajouter de secret, token, mot de passe, certificat privé, donnée client ou plan sensible dans Git, les logs, les fixtures ou les captures. Utiliser des exemples neutralisés et des variables d'environnement documentées.
 
