@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "twins",
+  "version-string": "0.0.0",
+  "builtin-baseline": "c76c06644034521fb761a39f8f52d8e87d1103d5",
+  "dependencies": []
+}
